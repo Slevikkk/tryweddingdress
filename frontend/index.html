@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try Wedding Dress — AI Virtual Try-On</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showPage('landing')">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="#examples" onclick="showPage('landing')">Examples</a>
+                <a href="#" onclick="showPage('tryon')">Try On</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LANDING PAGE -->
+    <div id="page-landing" class="page active">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>See Yourself in Your Dream Wedding Dress</h1>
+                <p class="hero-subtitle">Upload your photo and try on wedding dresses instantly with AI. No appointment needed.</p>
+                <button class="btn-primary" onclick="showPage('tryon')">Try It Now</button>
+            </div>
+        </section>
+
+        <section id="examples" class="examples-section">
+            <h2>Before & After</h2>
+            <p class="section-subtitle">Real results from our AI try-on technology</p>
+            <div id="examples-grid" class="examples-grid">
+                <!-- filled by JS -->
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Upload Your Photo</h3>
+                    <p>Take a full-body photo in simple clothing</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Choose a Dress</h3>
+                    <p>Pick from our catalog or upload your own</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>See the Result</h3>
+                    <p>Get a realistic photo in seconds</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TRY-ON PAGE -->
+    <div id="page-tryon" class="page">
+        <div class="tryon-container">
+            <h2>Virtual Try-On</h2>
+
+            <div class="tryon-grid">
+                <!-- Step 1: Upload Photo -->
+                <div class="tryon-step">
+                    <h3>1. Your Photo</h3>
+                    <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                        <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)" hidden>
+                        <div id="upload-placeholder" class="upload-placeholder" onclick="document.getElementById('photo-input').click()">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            <p>Drag & drop your full-body photo<br><span>or click to select</span></p>
+                        </div>
+                        <div id="upload-preview" class="upload-preview" style="display:none;">
+                            <img id="preview-img" src="" alt="Your photo">
+                            <button class="btn-remove" onclick="removePhoto()">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Choose Dress -->
+                <div class="tryon-step">
+                    <h3>2. Choose Dress</h3>
+                    <div class="catalog-filters">
+                        <div class="filter-group">
+                            <label>Color:</label>
+                            <div id="color-filters" class="filter-pills">
+                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">All</button>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Style:</label>
+                            <div id="style-filters" class="filter-pills">
+                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">All</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="dress-catalog" class="dress-catalog">
+                        <!-- filled by JS -->
+                    </div>
+                    <div class="upload-own-dress">
+                        <label class="btn-secondary" style="cursor:pointer;">
+                            Upload your own dress photo
+                            <input type="file" id="custom-dress-input" accept="image/*" onchange="handleCustomDress(event)" hidden>
+                        </label>
+                        <div id="custom-dress-preview" style="display:none;margin-top:8px;">
+                            <img id="custom-dress-img" src="" alt="Custom dress" style="max-height:80px;border-radius:8px;">
+                            <button class="btn-remove-small" onclick="removeCustomDress()">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Result -->
+                <div class="tryon-step result-step">
+                    <h3>3. Result</h3>
+                    <div id="result-area" class="result-area">
+                        <div id="result-placeholder" class="result-placeholder">
+                            <p>Your result will appear here</p>
+                        </div>
+                        <div id="result-loading" class="result-loading" style="display:none;">
+                            <div class="spinner"></div>
+                            <p>Generating your look...<br><span>This takes 30-60 seconds</span></p>
+                        </div>
+                        <div id="result-image" style="display:none;">
+                            <img id="result-img" src="" alt="Try-on result">
+                        </div>
+                    </div>
+                    <div id="result-actions" class="result-actions" style="display:none;">
+                        <a id="download-btn" href="" download="wedding-dress-tryon.png" class="btn-primary">Download</a>
+                        <button class="btn-secondary" onclick="resetResult()">Try Another</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="generate-btn" class="btn-generate" onclick="generateTryOn()" disabled>
+                Try It On
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by AI &middot; Photos are processed securely and not stored permanently</p>
+    </footer>
+
+    <!-- DRESS DETAIL MODAL -->
+    <div id="dress-modal" class="modal" style="display:none;" onclick="closeDressModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeDressModal()">&times;</button>
+            <div class="modal-grid">
+                <div class="modal-image-wrap">
+                    <img id="modal-img" src="" alt="">
+                </div>
+                <div class="modal-details">
+                    <h3 id="modal-name"></h3>
+                    <div class="modal-meta">
+                        <span class="modal-meta-item"><span class="dress-color" id="modal-color-swatch"></span> <span id="modal-color"></span></span>
+                        <span class="modal-meta-item"><span id="modal-style"></span></span>
+                        <span class="modal-meta-item" id="modal-vendor-pill" style="display:none;"><span id="modal-vendor"></span></span>
+                        <span class="modal-meta-item" id="modal-price-pill" style="display:none;"><span id="modal-price"></span></span>
+                    </div>
+                    <p id="modal-description"></p>
+                    <div class="modal-actions">
+                        <button class="btn-primary modal-select-btn" onclick="selectDressFromModal()">Use this dress</button>
+                        <a id="modal-source-link" class="btn-secondary modal-source-link" href="#" target="_blank" rel="noopener" style="display:none;">View on David's Bridal &rarr;</a>
+                    </div>
+                    <p class="modal-attribution" id="modal-attribution" style="display:none;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

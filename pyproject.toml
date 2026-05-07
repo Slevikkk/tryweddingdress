@@ -1,0 +1,20 @@
+[project]
+name = "wedding-dress-tryon"
+version = "1.0.0"
+description = "AI-powered virtual try-on web app for wedding dresses."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+    "aiohttp>=3.10,<4",
+    "aiofiles>=24",
+    "python-multipart>=0.0.9",
+    "pillow>=10",
+]
+
+[tool.uv]
+package = false
+
+[tool.devin.deploy]
+app_module = "backend.main:app"
+port = 8000

@@ -1,0 +1,88 @@
+# =============================================================================
+# Secrets & local environment
+# =============================================================================
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+credentials.json
+.FASHN_API_KEY
+
+# =============================================================================
+# Python
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# =============================================================================
+# Node / frontend (just in case)
+# =============================================================================
+node_modules/
+.next/
+.cache/
+
+# =============================================================================
+# Editor / OS
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# =============================================================================
+# Runtime user data — must NEVER be committed
+# =============================================================================
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/results/*
+!backend/results/.gitkeep
+
+# =============================================================================
+# Backup & temporary
+# =============================================================================
+*.bak
+*.bak_*
+*.tmp
+*.tar.gz
+*.zip
+catalog/catalog.json.bak*
+
+# =============================================================================
+# Large / superseded data dirs
+# =============================================================================
+# Old experimental catalog — superseded by catalog/
+catalog_v2/
+
+# Local test fixtures (kept out of GitHub for size; ~12 MB)
+tests/
+
+# Empty placeholder dirs from earlier scaffolding
+handoff/
+landing/
+prompts/
+research/
+shorts/
+
+# =============================================================================
+# Local deploy / build artifacts
+# =============================================================================
+/tmp/
+twstatic/
+*.zip
+deploy.log
