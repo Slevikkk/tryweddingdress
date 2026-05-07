@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Home</a>
+                <a href="/" class="nav-ghost">Try on</a>
+                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost">Log out</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-shell">
+        <div class="dashboard-header">
+            <div>
+                <h1>Your dashboard</h1>
+                <div class="user-meta">Signed in as <strong data-auth-email></strong></div>
+            </div>
+            <a href="/" class="btn-primary">New try-on</a>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>Credits</h3>
+                <div class="big-number" id="credit-balance">—</div>
+                <div class="card-sub">1 credit = 1 try-on</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>Try-ons</h3>
+                <div class="big-number" id="generations-count">—</div>
+                <div class="card-sub" id="generations-completed">— completed</div>
+            </div>
+            <div class="dashboard-card">
+                <h3>Account</h3>
+                <div class="big-number" style="font-size:1.2rem; font-family:'Inter', sans-serif; font-weight:600;" id="account-name">—</div>
+                <div class="card-sub" id="account-since">Member since —</div>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <h2>Recent try-ons</h2>
+            <div id="history-list" class="history-list">
+                <div class="history-empty">Loading…</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Gate the page on a live session.
+        window.TWD_AUTH.requireAuth();
+
+        (async function () {
+            var user = await window.TWD_AUTH.getUser();
+            if (!user) return;
+
+            var profile = await window.TWD_AUTH.getProfile();
+            document.getElementById('account-name').textContent =
+                (profile && profile.full_name) || user.email;
+            if (profile && profile.created_at) {
+                var d = new Date(profile.created_at);
+                document.getElementById('account-since').textContent =
+                    'Member since ' + d.toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+            }
+
+            var balance = await window.TWD_AUTH.getCreditBalance();
+            document.getElementById('credit-balance').textContent = balance;
+
+            var generations = await window.TWD_AUTH.listGenerations(50);
+            document.getElementById('generations-count').textContent = generations.length;
+            var completed = generations.filter(function (g) { return g.status === 'completed'; }).length;
+            document.getElementById('generations-completed').textContent = completed + ' completed';
+
+            var list = document.getElementById('history-list');
+            if (generations.length === 0) {
+                list.innerHTML = '<div class="history-empty">No try-ons yet — <a href="/" style="color:var(--accent-dark);">try your first dress</a>.</div>';
+                return;
+            }
+            list.innerHTML = generations.map(function (g) {
+                var img = g.result_photo_url || g.dress_image_url || '';
+                var when = new Date(g.created_at).toLocaleString();
+                var safeName = (g.dress_name || 'Try-on').replace(/[<>]/g, '');
+                return (
+                    '<div class="history-item">' +
+                        '<img src="' + img + '" alt="" loading="lazy">' +
+                        '<div class="meta">' +
+                            safeName +
+                            '<span class="when">' + when + '</span>' +
+                        '</div>' +
+                        '<span class="status ' + g.status + '">' + g.status + '</span>' +
+                    '</div>'
+                );
+            }).join('');
+        })();
+    </script>
+</body>
+</html>

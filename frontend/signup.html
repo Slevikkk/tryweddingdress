@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Home</a>
+                <a href="/login.html" class="nav-ghost">Log in</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-shell">
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="auth-subtitle">It's free — your first try-ons are on us.</p>
+
+            <div id="error-box" class="auth-error" role="alert"></div>
+            <div id="info-box" class="auth-info" role="status"></div>
+
+            <form id="signup-form" class="auth-form" novalidate>
+                <div>
+                    <label for="full_name">Full name <span style="color:var(--text-light);font-weight:400;">(optional)</span></label>
+                    <input type="text" id="full_name" name="full_name" autocomplete="name">
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required>
+                </div>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="marketing_opt_in" name="marketing_opt_in">
+                    <span>Send me occasional product updates and partner offers (optional).</span>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="terms_agree" required>
+                    <span>I agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+                </label>
+                <button type="submit" class="btn-primary">Create account</button>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account? <a href="/login.html">Log in</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        (async function () {
+            // Already signed in? Bounce to dashboard.
+            var session = await window.TWD_AUTH.getSession();
+            if (session) window.location.replace('/dashboard.html');
+        })();
+
+        var form = document.getElementById('signup-form');
+        var errorBox = document.getElementById('error-box');
+        var infoBox = document.getElementById('info-box');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            errorBox.classList.remove('visible'); errorBox.textContent = '';
+            infoBox.classList.remove('visible'); infoBox.textContent = '';
+
+            var email = document.getElementById('email').value.trim();
+            var password = document.getElementById('password').value;
+            var fullName = document.getElementById('full_name').value.trim();
+            var marketingOptIn = document.getElementById('marketing_opt_in').checked;
+            var termsAgree = document.getElementById('terms_agree').checked;
+
+            if (!termsAgree) {
+                errorBox.textContent = 'Please accept the Terms of Service and Privacy Policy to continue.';
+                errorBox.classList.add('visible');
+                return;
+            }
+            if (password.length < 8) {
+                errorBox.textContent = 'Password must be at least 8 characters.';
+                errorBox.classList.add('visible');
+                return;
+            }
+
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Creating account…';
+
+            var resp = await window.TWD_AUTH.signUp(email, password, fullName, marketingOptIn);
+
+            btn.disabled = false;
+            btn.textContent = 'Create account';
+
+            if (resp.error) {
+                errorBox.textContent = resp.error.message || 'Sign-up failed. Please try again.';
+                errorBox.classList.add('visible');
+                return;
+            }
+
+            // Two flows depending on Supabase project settings:
+            //   - email confirmation OFF → session is set immediately → go to dashboard
+            //   - email confirmation ON  → session is null until they click the link
+            if (resp.data.session) {
+                window.location.href = '/dashboard.html';
+            } else {
+                infoBox.innerHTML =
+                    'Account created! We sent a confirmation link to <strong>' +
+                    email.replace(/[<>]/g, '') +
+                    '</strong>. Click it to log in.';
+                infoBox.classList.add('visible');
+                form.reset();
+            }
+        });
+    </script>
+</body>
+</html>

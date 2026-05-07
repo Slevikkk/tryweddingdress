@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
 </head>
 <body>
     <nav class="navbar">
@@ -16,6 +17,10 @@
             <div class="nav-links">
                 <a href="#examples" onclick="showPage('landing')">Examples</a>
                 <a href="#" onclick="showPage('tryon')">Try On</a>
+                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Log in</a>
+                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Sign up</a>
+                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Dashboard</a>
+                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost" data-auth="signed-in">Log out</a>
             </div>
         </div>
     </nav>
@@ -148,6 +153,13 @@
 
     <footer>
         <p>Powered by AI &middot; Photos are processed securely and not stored permanently</p>
+        <p style="margin-top:8px;">
+            <a href="/privacy.html" style="color:inherit;">Privacy</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Terms</a>
+            &nbsp;&middot;&nbsp;
+            <a href="mailto:info@tryweddingdress.com" style="color:inherit;">Contact</a>
+        </p>
     </footer>
 
     <!-- DRESS DETAIL MODAL -->
@@ -177,6 +189,9 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

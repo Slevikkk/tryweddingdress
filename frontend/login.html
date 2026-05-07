@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Home</a>
+                <a href="/signup.html" class="nav-cta">Sign up</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="auth-shell">
+        <div class="auth-card">
+            <h1>Welcome back</h1>
+            <p class="auth-subtitle">Log in to see your generation history.</p>
+
+            <div id="error-box" class="auth-error" role="alert"></div>
+            <div id="info-box" class="auth-info" role="status"></div>
+
+            <form id="login-form" class="auth-form" novalidate>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn-primary">Log in</button>
+            </form>
+
+            <p class="auth-footer">
+                <a href="#" id="forgot-link">Forgot password?</a>
+            </p>
+            <p class="auth-footer" style="margin-top:8px;">
+                Don't have an account yet? <a href="/signup.html">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        var qs = new URLSearchParams(window.location.search);
+        var errorBox = document.getElementById('error-box');
+        var infoBox = document.getElementById('info-box');
+
+        if (qs.get('confirmed') === '1') {
+            infoBox.textContent = 'Email confirmed! You can now log in.';
+            infoBox.classList.add('visible');
+        } else if (qs.get('reset') === '1') {
+            infoBox.textContent = 'Password reset link clicked. Set a new password from your account, then log in.';
+            infoBox.classList.add('visible');
+        }
+
+        (async function () {
+            var session = await window.TWD_AUTH.getSession();
+            if (session) {
+                var next = qs.get('next') || '/dashboard.html';
+                window.location.replace(next);
+            }
+        })();
+
+        var form = document.getElementById('login-form');
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            errorBox.classList.remove('visible'); errorBox.textContent = '';
+            infoBox.classList.remove('visible'); infoBox.textContent = '';
+
+            var email = document.getElementById('email').value.trim();
+            var password = document.getElementById('password').value;
+
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Signing in…';
+
+            var resp = await window.TWD_AUTH.signIn(email, password);
+
+            btn.disabled = false;
+            btn.textContent = 'Log in';
+
+            if (resp.error) {
+                errorBox.textContent = resp.error.message || 'Login failed. Please check your email and password.';
+                errorBox.classList.add('visible');
+                return;
+            }
+
+            var next = qs.get('next') || '/dashboard.html';
+            window.location.href = next;
+        });
+
+        document.getElementById('forgot-link').addEventListener('click', async function (e) {
+            e.preventDefault();
+            errorBox.classList.remove('visible'); errorBox.textContent = '';
+            infoBox.classList.remove('visible'); infoBox.textContent = '';
+            var email = document.getElementById('email').value.trim();
+            if (!email) {
+                errorBox.textContent = 'Enter your email above first, then click "Forgot password" again.';
+                errorBox.classList.add('visible');
+                return;
+            }
+            var resp = await window.TWD_AUTH.resetPassword(email);
+            if (resp.error) {
+                errorBox.textContent = resp.error.message || 'Could not send reset email. Try again later.';
+                errorBox.classList.add('visible');
+                return;
+            }
+            infoBox.textContent = 'If an account exists for ' + email + ', a password reset email is on its way.';
+            infoBox.classList.add('visible');
+        });
+    </script>
+</body>
+</html>

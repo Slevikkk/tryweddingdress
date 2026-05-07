@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Home</a>
+                <a href="/terms.html" class="nav-ghost">Terms</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="policy-shell">
+        <h1>Privacy Policy</h1>
+        <p class="policy-meta">Last updated: May 7, 2026 · Effective immediately for all users.</p>
+
+        <p>
+            Try Wedding Dress ("<strong>we</strong>", "<strong>us</strong>", "<strong>the Service</strong>") is operated as
+            a personal project providing AI-powered virtual try-on for wedding dresses at
+            <a href="https://tryweddingdress.com">tryweddingdress.com</a>. This Privacy Policy explains
+            what personal data we collect, why, and how we keep it safe. By using the Service you
+            agree to the practices described below.
+        </p>
+
+        <h2>1. What we collect</h2>
+        <h3>1.1 Account data</h3>
+        <ul>
+            <li>Email address (required for sign-up).</li>
+            <li>Password — stored only as a salted hash by our auth provider; we never see the plaintext.</li>
+            <li>Optional full name and your marketing-email preference.</li>
+        </ul>
+
+        <h3>1.2 Photos you upload</h3>
+        <ul>
+            <li>Full-body photo of yourself ("input photo") that you submit for a try-on.</li>
+            <li>Optional custom dress photo if you upload one instead of choosing from our catalog.</li>
+            <li>The generated try-on result image.</li>
+        </ul>
+        <p>
+            We treat photos of people as <strong>special-category data</strong>. They are stored in
+            access-controlled private buckets and are accessible only to you (via your authenticated
+            account) and a minimum number of operators for support and abuse prevention.
+        </p>
+
+        <h3>1.3 Usage data</h3>
+        <ul>
+            <li>Try-on history (which dress, when, completed / failed, processing time).</li>
+            <li>Payment records when you purchase credits (we never store full card numbers — they are
+                handled directly by our payment processor).</li>
+            <li>Technical logs: a salted hash of your IP address, user-agent, and timestamps. We use
+                these to fight abuse, not to track individuals.</li>
+        </ul>
+
+        <h2>2. How we use it</h2>
+        <ul>
+            <li>To provide the Service: log you in, run the AI try-on, show your history, and bill you
+                for credits.</li>
+            <li>To send <strong>transactional</strong> emails (sign-up confirmation, password reset,
+                payment receipts). These are required and cannot be opted out of while you have an
+                account.</li>
+            <li>To send <strong>marketing</strong> emails (product updates, partner offers) only if
+                you explicitly opted in. You can change your mind at any time from your account or
+                via the unsubscribe link in every marketing email.</li>
+            <li>To prevent abuse and fraud (e.g. one-account-per-person rules).</li>
+            <li>To improve the AI quality. We do <strong>not</strong> use your photos to train the
+                model unless you give us separate, explicit consent in writing.</li>
+        </ul>
+
+        <h2>3. Sub-processors and partners</h2>
+        <p>We use the following third-party processors to operate the Service:</p>
+        <ul>
+            <li><strong>Supabase</strong> (database, auth, storage) — Frankfurt region.</li>
+            <li><strong>FASHN AI</strong> (the diffusion model that produces the try-on result).
+                Photos are sent to FASHN as base64 over HTTPS; FASHN's policy applies during processing.</li>
+            <li><strong>Cloudflare</strong> (DNS, CDN, email routing).</li>
+            <li><strong>Brevo</strong> (transactional email delivery).</li>
+            <li>A payment processor (Stripe or LemonSqueezy) for credit purchases — disclosed at the
+                checkout screen.</li>
+        </ul>
+        <p>
+            These vendors process data only on our instructions and are bound by data-processing
+            agreements. We do not sell your personal data.
+        </p>
+
+        <h2>4. How long we keep data</h2>
+        <ul>
+            <li>Account data: while your account is active, plus up to 30 days after you delete it.</li>
+            <li>Input photos and try-on results: kept while your account is active. You can delete any
+                generation from your dashboard, which also removes the underlying images. Deleted
+                items are purged from backups within 30 days.</li>
+            <li>Payment records: 7 years, as required by tax law.</li>
+            <li>Technical logs: 90 days.</li>
+        </ul>
+
+        <h2>5. Your rights</h2>
+        <p>Depending on where you live (EU/EEA/UK, California, etc.) you have the right to:</p>
+        <ul>
+            <li>Access a copy of your personal data.</li>
+            <li>Correct inaccurate data.</li>
+            <li>Delete your account and all associated photos at any time.</li>
+            <li>Object to or restrict certain processing.</li>
+            <li>Port your data to another service.</li>
+            <li>Withdraw consent for marketing emails or for any optional processing.</li>
+            <li>Lodge a complaint with your local data-protection authority.</li>
+        </ul>
+        <p>
+            To exercise any of these rights, email us at
+            <a href="mailto:info@tryweddingdress.com">info@tryweddingdress.com</a>. We respond within
+            30 days.
+        </p>
+
+        <h2>6. Children</h2>
+        <p>
+            The Service is not directed at children under 16 and we do not knowingly collect data
+            from them. If you believe a child has signed up, contact us and we will delete the
+            account.
+        </p>
+
+        <h2>7. International transfers</h2>
+        <p>
+            Our database and storage are hosted in the EU (Frankfurt). FASHN AI may process your
+            photos outside the EU. Where required, we rely on the European Commission's Standard
+            Contractual Clauses for transfers.
+        </p>
+
+        <h2>8. Security</h2>
+        <p>
+            We use TLS in transit, private buckets with row-level security at rest, and salted hashes
+            for IPs and passwords. No system is perfectly secure; if you suspect a breach affecting
+            your account, contact us immediately.
+        </p>
+
+        <h2>9. Changes</h2>
+        <p>
+            We may update this policy from time to time. Material changes will be announced by email
+            (to addresses on file) and on this page at least 14 days before they take effect.
+        </p>
+
+        <h2>10. Contact</h2>
+        <p>
+            Try Wedding Dress · <a href="mailto:info@tryweddingdress.com">info@tryweddingdress.com</a>
+        </p>
+    </article>
+</body>
+</html>

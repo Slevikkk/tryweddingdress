@@ -1,0 +1,268 @@
+/* =============================================================================
+   Auth-page styles (login / signup / dashboard / privacy / terms).
+   Layered on top of style.css — only adds new classes, never overrides.
+   ============================================================================= */
+
+.auth-shell {
+    min-height: 100vh;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 120px 24px 60px;
+    background: linear-gradient(180deg, #f5f0eb 0%, var(--bg) 100%);
+}
+.auth-card {
+    width: 100%; max-width: 440px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 36px;
+}
+.auth-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.auth-subtitle {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-form label {
+    display: block;
+    font-size: 0.85rem; font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(197,168,128,0.18);
+}
+
+.auth-form .checkbox-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.85rem; color: var(--text-light);
+    line-height: 1.4;
+}
+.auth-form .checkbox-row input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: var(--accent);
+}
+.auth-form .checkbox-row a {
+    color: var(--accent-dark);
+    text-decoration: underline;
+}
+
+.auth-form button[type="submit"] {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.auth-error {
+    display: none;
+    background: #fde9e9;
+    border: 1px solid #f5c2c2;
+    color: #8a1f1f;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+}
+.auth-error.visible { display: block; }
+
+.auth-info {
+    display: none;
+    background: #e9f5ee;
+    border: 1px solid #b9dec6;
+    color: #1f5c34;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+}
+.auth-info.visible { display: block; }
+
+.auth-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+.auth-footer a {
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-weight: 500;
+}
+.auth-footer a:hover { text-decoration: underline; }
+
+/* DASHBOARD */
+.dashboard-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 24px 60px;
+}
+.dashboard-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+    margin-bottom: 32px;
+}
+.dashboard-header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+.dashboard-header .user-meta {
+    color: var(--text-light); font-size: 0.9rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+.dashboard-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+}
+.dashboard-card .big-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--text);
+    line-height: 1;
+}
+.dashboard-card .card-sub {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.dashboard-section {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    margin-bottom: 24px;
+}
+.dashboard-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+}
+
+.history-list { display: flex; flex-direction: column; gap: 12px; }
+.history-item {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.history-item img {
+    width: 64px; height: 64px; object-fit: cover;
+    border-radius: 8px;
+    background: #f4f1ec;
+}
+.history-item .meta {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+.history-item .meta .when {
+    display: block;
+    color: var(--text-light); font-size: 0.78rem;
+    margin-top: 2px;
+}
+.history-item .status {
+    font-size: 0.78rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+.history-item .status.completed { background: #e9f5ee; color: #1f5c34; }
+.history-item .status.pending,
+.history-item .status.running    { background: #fff4e0; color: #8a5a1f; }
+.history-item .status.failed,
+.history-item .status.canceled   { background: #fde9e9; color: #8a1f1f; }
+.history-empty {
+    text-align: center;
+    color: var(--text-light);
+    padding: 24px 0;
+    font-size: 0.9rem;
+}
+
+/* Nav auth pills */
+.nav-links .nav-cta {
+    background: var(--accent);
+    color: #fff !important;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.nav-links .nav-cta:hover { background: var(--accent-dark); color: #fff !important; }
+.nav-links .nav-ghost {
+    color: var(--text) !important;
+    font-weight: 500;
+}
+
+/* Long-form policy pages */
+.policy-shell {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 120px 24px 80px;
+}
+.policy-shell h1 {
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+}
+.policy-shell .policy-meta {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+}
+.policy-shell h2 {
+    font-size: 1.4rem;
+    margin: 32px 0 12px;
+}
+.policy-shell h3 {
+    font-size: 1.1rem;
+    margin: 24px 0 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+.policy-shell p,
+.policy-shell li {
+    color: var(--text);
+    font-size: 0.98rem;
+    line-height: 1.7;
+}
+.policy-shell ul,
+.policy-shell ol {
+    margin: 12px 0 12px 24px;
+}
+.policy-shell li { margin-bottom: 6px; }
+.policy-shell a {
+    color: var(--accent-dark);
+}
