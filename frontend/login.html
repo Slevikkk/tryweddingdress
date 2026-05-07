@@ -62,7 +62,10 @@
             infoBox.textContent = 'Email confirmed! You can now log in.';
             infoBox.classList.add('visible');
         } else if (qs.get('reset') === '1') {
-            infoBox.textContent = 'Password reset link clicked. Set a new password from your account, then log in.';
+            infoBox.textContent = 'Password updated. Log in with your new password.';
+            infoBox.classList.add('visible');
+        } else if (qs.get('reset_sent') === '1') {
+            infoBox.textContent = 'Check your email for a link to reset your password.';
             infoBox.classList.add('visible');
         }
 

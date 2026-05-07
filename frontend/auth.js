@@ -74,8 +74,12 @@
     async function resetPassword(email) {
         var origin = window.location.origin;
         return sb.auth.resetPasswordForEmail(email, {
-            redirectTo: origin + '/login.html?reset=1',
+            redirectTo: origin + '/reset-password.html',
         });
+    }
+
+    async function updatePassword(newPassword) {
+        return sb.auth.updateUser({ password: newPassword });
     }
 
     async function getSession() {
@@ -169,8 +173,18 @@
     }
 
     // Initial paint + listen for changes from anywhere (e.g. another tab).
-    sb.auth.onAuthStateChange(function (_event, session) {
+    // PASSWORD_RECOVERY fires when Supabase parses a recovery hash from a
+    // password-reset email; we redirect to the dedicated form so the user
+    // can actually set a new password instead of being dropped logged-in on
+    // the home page with an unchanged credential.
+    sb.auth.onAuthStateChange(function (event, session) {
         applyAuthVisibility(session ? session.user : null);
+        if (event === 'PASSWORD_RECOVERY') {
+            var path = window.location.pathname;
+            if (path !== '/reset-password.html' && path !== '/reset-password') {
+                window.location.replace('/reset-password.html');
+            }
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -187,6 +201,7 @@
         signIn: signIn,
         signOut: signOut,
         resetPassword: resetPassword,
+        updatePassword: updatePassword,
         getSession: getSession,
         getUser: getUser,
         getProfile: getProfile,
