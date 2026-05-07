@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confirm your email</title>
+</head>
+<body style="margin:0;padding:0;background:#faf9f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1a1a1a;line-height:1.55;">
+  <span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;font-size:1px;line-height:1px;mso-hide:all;">
+    Confirm your email to start trying on wedding dresses with Try Wedding Dress.
+  </span>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#faf9f7;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="560" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #e8e4df;border-radius:12px;">
+          <tr>
+            <td style="padding:32px 40px 12px;text-align:center;border-bottom:1px solid #e8e4df;">
+              <a href="https://tryweddingdress.com" style="text-decoration:none;color:#1a1a1a;">
+                <span style="font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:22px;font-weight:600;letter-spacing:0.3px;">Try Wedding Dress</span>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 40px 8px;">
+              <h1 style="margin:0 0 16px;font-size:22px;font-weight:600;color:#1a1a1a;">Confirm your email</h1>
+              <p style="margin:0 0 16px;font-size:15px;color:#333333;">Welcome! You're one step away from trying on wedding dresses with AI.</p>
+              <p style="margin:0 0 24px;font-size:15px;color:#333333;">Tap the button below to verify <strong>{{ .Email }}</strong> and activate your account. The link expires in 1 hour.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto 24px;">
+                <tr>
+                  <td align="center" bgcolor="#c5a880" style="border-radius:8px;">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;background:#c5a880;">Confirm email</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 12px;font-size:13px;color:#666666;">Or copy &amp; paste this link into your browser:</p>
+              <p style="margin:0 0 28px;font-size:13px;word-break:break-all;"><a href="{{ .ConfirmationURL }}" style="color:#a88b64;text-decoration:underline;">{{ .ConfirmationURL }}</a></p>
+              <p style="margin:0;padding:14px 16px;font-size:13px;color:#666666;background:#f5f0eb;border-radius:8px;">If you didn't sign up for Try Wedding Dress, you can safely ignore this email — your address won't be added to any account.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 40px 32px;border-top:1px solid #e8e4df;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;color:#999999;">Try Wedding Dress &middot; AI virtual try-on for bridal</p>
+              <p style="margin:0;font-size:12px;color:#999999;"><a href="https://tryweddingdress.com" style="color:#a88b64;text-decoration:none;">tryweddingdress.com</a> &middot; <a href="https://tryweddingdress.com/privacy.html" style="color:#a88b64;text-decoration:none;">Privacy</a> &middot; <a href="https://tryweddingdress.com/terms.html" style="color:#a88b64;text-decoration:none;">Terms</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
