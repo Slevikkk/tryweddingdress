@@ -7,6 +7,57 @@ let catalogData = [];
 let activeColorFilter = 'all';
 let activeStyleFilter = 'all';
 
+// ---------------------------------------------------------------------------
+// Auth-aware fetch helpers
+// ---------------------------------------------------------------------------
+// Both /api/upload-photo and /api/try-on require a Supabase JWT. We grab
+// it lazily from the active session each call (the SDK refreshes it on
+// its own) and reject the action up front when there is no session, so
+// users see a friendly modal instead of a 401.
+async function getAuthHeader() {
+    if (!window.TWD_AUTH) return null;
+    const session = await window.TWD_AUTH.getSession();
+    if (!session || !session.access_token) return null;
+    return 'Bearer ' + session.access_token;
+}
+
+async function authedFetch(url, options) {
+    const auth = await getAuthHeader();
+    if (!auth) {
+        return { __authMissing: true };
+    }
+    options = options || {};
+    options.headers = Object.assign({}, options.headers || {}, {
+        Authorization: auth,
+    });
+    return fetch(API + url, options);
+}
+
+function openAuthRequiredModal() {
+    const modal = document.getElementById('auth-required-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAuthRequiredModal() {
+    const modal = document.getElementById('auth-required-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function openOutOfCreditsModal() {
+    const modal = document.getElementById('out-of-credits-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeOutOfCreditsModal() {
+    const modal = document.getElementById('out-of-credits-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function goToLoginWithReturn() {
+    const next = encodeURIComponent(window.location.pathname + window.location.hash);
+    window.location.href = '/login.html?next=' + next;
+}
+
 function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
@@ -239,7 +290,23 @@ async function uploadPhoto(file) {
     reader.readAsDataURL(file);
 
     try {
-        const res = await fetch(API + '/api/upload-photo', { method: 'POST', body: formData });
+        const res = await authedFetch('/api/upload-photo', { method: 'POST', body: formData });
+        if (res && res.__authMissing) {
+            openAuthRequiredModal();
+            removePhoto();
+            return;
+        }
+        if (res.status === 401) {
+            openAuthRequiredModal();
+            removePhoto();
+            return;
+        }
+        if (!res.ok) {
+            const err = await res.json().catch(function () { return {}; });
+            alert('Failed to upload photo: ' + (err.detail || res.statusText));
+            removePhoto();
+            return;
+        }
         const data = await res.json();
         uploadedPhotoId = data.file_id;
         updateGenerateBtn();
@@ -306,9 +373,28 @@ async function generateTryOn() {
             formData.append('dress_id', selectedDressId);
         }
 
-        const res = await fetch(API + '/api/try-on', { method: 'POST', body: formData });
+        const res = await authedFetch('/api/try-on', { method: 'POST', body: formData });
+
+        if (res && res.__authMissing) {
+            document.getElementById('result-loading').style.display = 'none';
+            document.getElementById('result-placeholder').style.display = 'block';
+            openAuthRequiredModal();
+            return;
+        }
+        if (res.status === 401) {
+            document.getElementById('result-loading').style.display = 'none';
+            document.getElementById('result-placeholder').style.display = 'block';
+            openAuthRequiredModal();
+            return;
+        }
+        if (res.status === 402) {
+            document.getElementById('result-loading').style.display = 'none';
+            document.getElementById('result-placeholder').style.display = 'block';
+            openOutOfCreditsModal();
+            return;
+        }
         if (!res.ok) {
-            const err = await res.json();
+            const err = await res.json().catch(function () { return {}; });
             throw new Error(err.detail || 'Generation failed');
         }
         const data = await res.json();
@@ -322,11 +408,11 @@ async function generateTryOn() {
         document.getElementById('result-loading').style.display = 'none';
         document.getElementById('result-placeholder').style.display = 'block';
         alert('Error: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Try It On';
+        updateGenerateBtn();
     }
-
-    btn.disabled = false;
-    btn.textContent = 'Try It On';
-    updateGenerateBtn();
 }
 
 function resetResult() {

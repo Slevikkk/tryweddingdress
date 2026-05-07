@@ -162,6 +162,42 @@
         </p>
     </footer>
 
+    <!-- AUTH REQUIRED MODAL (try-on requires sign-in) -->
+    <div id="auth-required-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeAuthRequiredModal()">
+        <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAuthRequiredModal()">&times;</button>
+            <div style="padding:36px 32px;text-align:center;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">Sign in to try it on</h3>
+                <p style="color:#666;margin-bottom:24px;">
+                    Try-on uses 1 credit per generation. Create a free account and we'll
+                    drop 3 credits on you to get started.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <a href="/signup.html" class="btn-primary">Sign up free</a>
+                    <a href="#" class="btn-secondary" onclick="goToLoginWithReturn();return false;">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OUT OF CREDITS MODAL -->
+    <div id="out-of-credits-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeOutOfCreditsModal()">
+        <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeOutOfCreditsModal()">&times;</button>
+            <div style="padding:36px 32px;text-align:center;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">You're out of credits</h3>
+                <p style="color:#666;margin-bottom:24px;">
+                    Each try-on uses 1 credit. Top-ups will be available shortly.
+                    For now, drop us a line and we'll grant a few more.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <a href="/dashboard.html" class="btn-primary">View dashboard</a>
+                    <a href="mailto:info@tryweddingdress.com?subject=More%20credits%20please" class="btn-secondary">Contact us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- DRESS DETAIL MODAL -->
     <div id="dress-modal" class="modal" style="display:none;" onclick="closeDressModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
