@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тарифы — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
+                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
+                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
+            </div>
+        </div>
+    </nav>
+
+    <article class="policy-shell">
+        <h1>Тарифы</h1>
+        <p class="policy-meta">
+            1 кредит = 1 примерка. Кредиты не сгорают и хранятся в вашем
+            аккаунте. Оплата разовая, подписки нет.
+        </p>
+
+        <div id="pricing-error" class="auth-error" role="alert" style="margin-bottom:16px;"></div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card" data-pack="starter">
+                <div class="pricing-name">Старт</div>
+                <div class="pricing-tries">10 примерок</div>
+                <div class="pricing-price">1490 ₽</div>
+                <div class="pricing-per">149 ₽ за примерку</div>
+                <button class="btn-secondary pricing-buy" onclick="handleBuy('starter', this)">Купить</button>
+            </div>
+            <div class="pricing-card pricing-featured" data-pack="bride">
+                <div class="pricing-badge">Выбор невест</div>
+                <div class="pricing-name">Невеста</div>
+                <div class="pricing-tries">30 примерок</div>
+                <div class="pricing-price">2290 ₽</div>
+                <div class="pricing-per">76 ₽ за примерку</div>
+                <button class="btn-primary pricing-buy" onclick="handleBuy('bride', this)">Купить</button>
+            </div>
+            <div class="pricing-card" data-pack="full">
+                <div class="pricing-name">Полный</div>
+                <div class="pricing-tries">80 примерок</div>
+                <div class="pricing-price">4690 ₽</div>
+                <div class="pricing-per">59 ₽ за примерку</div>
+                <button class="btn-secondary pricing-buy" onclick="handleBuy('full', this)">Купить</button>
+            </div>
+        </div>
+
+        <p style="font-size:13px;color:var(--text-light);margin-top:20px;text-align:center;">
+            Оплата через ЮKassa: банковские карты, СБП, Apple Pay, Google Pay.
+            Чек по 54-ФЗ автоматически придёт на ваш email после оплаты.
+        </p>
+
+        <h2>Что входит в каждый пакет</h2>
+        <ul>
+            <li>Безлимитный доступ к нашему каталогу свадебных платьев.</li>
+            <li>Возможность загрузить и примерить ваше собственное платье (фото из интернета или из салона).</li>
+            <li>История всех примерок в личном кабинете — можно вернуться, скачать или удалить.</li>
+            <li>Качество AI-модели: FASHN <em>tryon-max</em> (3 внутренних кредита FASHN на одну примерку с нашей стороны).</li>
+            <li>Если примерка не удалась по нашей технической причине — кредит автоматически возвращается на баланс.</li>
+        </ul>
+
+        <h2>Условия и оплата</h2>
+        <ul>
+            <li><strong>Где:</strong> онлайн на сайте <a href="https://tryweddingdress.com">tryweddingdress.com</a>.</li>
+            <li><strong>Когда:</strong> услуга начинает действовать с момента оплаты.</li>
+            <li><strong>Как:</strong> оплата принимается через ЮKassa в рублях, сразу после оплаты пакет кредитов зачисляется на ваш аккаунт.</li>
+            <li><strong>Срок действия кредитов:</strong> 12 месяцев с момента покупки при отсутствии активности в аккаунте.</li>
+            <li><strong>Возврат:</strong> неиспользованные кредиты можно вернуть по запросу на <a href="mailto:info@tryweddingdress.com">info@tryweddingdress.com</a> в течение 14 дней с момента оплаты. Подробности — в <a href="/offer.html">оферте</a>.</li>
+        </ul>
+
+        <p style="margin-top:32px;text-align:center;">
+            Оформляя заказ, вы соглашаетесь с <a href="/offer.html">условиями оферты</a>
+            и <a href="/privacy.html">политикой конфиденциальности</a>.
+        </p>
+    </article>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
+
+    <!-- AUTH REQUIRED MODAL (purchase requires sign-in) -->
+    <div id="auth-required-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeAuthRequiredModal()">
+        <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAuthRequiredModal()">&times;</button>
+            <div style="padding:36px 32px;text-align:center;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">Войдите, чтобы купить</h3>
+                <p style="color:#666;margin-bottom:24px;">
+                    Покупка кредитов привязана к вашему аккаунту.
+                    Войдите или создайте аккаунт, чтобы продолжить.
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <a href="/login.html?next=/pricing.html" class="btn-primary">Войти</a>
+                    <a href="/signup.html" class="btn-secondary">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUY CREDITS MODAL — same markup as index/dashboard so buy-credits.js works -->
+    <div id="buy-credits-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeBuyCreditsModal()">
+        <div class="modal-content" style="max-width:760px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeBuyCreditsModal()">&times;</button>
+            <div style="padding:36px 32px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:8px;text-align:center;">Купить кредиты</h3>
+                <p style="color:#666;margin-bottom:24px;text-align:center;">
+                    1 кредит = 1 примерка. Кредиты не сгорают и хранятся в вашем аккаунте.
+                </p>
+                <div id="buy-credits-error" class="auth-error" role="alert" style="margin-bottom:16px;"></div>
+                <div class="pricing-grid">
+                    <div class="pricing-card" data-pack="starter">
+                        <div class="pricing-name">Старт</div>
+                        <div class="pricing-tries">10 примерок</div>
+                        <div class="pricing-price">1490 ₽</div>
+                        <div class="pricing-per">149 ₽ за примерку</div>
+                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('starter', this)">Купить</button>
+                    </div>
+                    <div class="pricing-card pricing-featured" data-pack="bride">
+                        <div class="pricing-badge">Выбор невест</div>
+                        <div class="pricing-name">Невеста</div>
+                        <div class="pricing-tries">30 примерок</div>
+                        <div class="pricing-price">2290 ₽</div>
+                        <div class="pricing-per">76 ₽ за примерку</div>
+                        <button class="btn-primary pricing-buy" onclick="buyCreditPack('bride', this)">Купить</button>
+                    </div>
+                    <div class="pricing-card" data-pack="full">
+                        <div class="pricing-name">Полный</div>
+                        <div class="pricing-tries">80 примерок</div>
+                        <div class="pricing-price">4690 ₽</div>
+                        <div class="pricing-per">59 ₽ за примерку</div>
+                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('full', this)">Купить</button>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:#888;margin-top:20px;text-align:center;">
+                    Оплата через ЮKassa: банковские карты, СБП, Apple Pay, Google Pay.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="buy-credits.js"></script>
+    <script>
+        function openAuthRequiredModal() {
+            var m = document.getElementById('auth-required-modal');
+            if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function closeAuthRequiredModal() {
+            var m = document.getElementById('auth-required-modal');
+            if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+        }
+        window.openAuthRequiredModal = openAuthRequiredModal;
+        window.closeAuthRequiredModal = closeAuthRequiredModal;
+
+        // Public pricing page: clicking "Купить" requires a session.
+        // If signed in → open the buy-credits modal (same flow as index/dashboard).
+        // If anonymous → show the auth-required modal (login or signup).
+        window.handleBuy = async function (packId, btn) {
+            if (!window.TWD_AUTH) {
+                openAuthRequiredModal();
+                return;
+            }
+            var session = await window.TWD_AUTH.getSession();
+            if (!session) {
+                openAuthRequiredModal();
+                return;
+            }
+            // Defer to the buy-credits modal flow which calls /api/checkout.
+            if (typeof window.openBuyCreditsModal === 'function') {
+                window.openBuyCreditsModal();
+                // Pre-click the matching pack button inside the modal.
+                setTimeout(function () {
+                    var modal = document.getElementById('buy-credits-modal');
+                    if (!modal) return;
+                    var target = modal.querySelector('.pricing-card[data-pack="' + packId + '"] .pricing-buy');
+                    if (target) target.click();
+                }, 50);
+            }
+        };
+
+        // Reflect auth state in the navbar (data-auth="signed-in"/"signed-out") —
+        // auth.js handles this automatically when the SDK is ready.
+    </script>
+</body>
+</html>
