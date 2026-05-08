@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата принята — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/dashboard.html" class="nav-ghost">Кабинет</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="checkout-shell">
+        <div class="checkout-icon">💍</div>
+        <h1>Оплата принята</h1>
+        <p>
+            Спасибо! Кредиты будут зачислены в течение минуты после подтверждения платежа банком.
+            Если они не появились через 5 минут, обновите страницу личного кабинета.
+        </p>
+        <p id="balance-status" style="color:var(--text-light);font-size:0.95rem;">
+            Проверяем баланс…
+        </p>
+        <div class="checkout-actions">
+            <a href="/dashboard.html" class="btn-primary">Открыть кабинет</a>
+            <a href="/" class="btn-secondary">Примерить платье</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Poll the credit balance for up to ~30 seconds so the user can see
+        // the +N credits land without manually refreshing the dashboard.
+        (async function () {
+            var statusEl = document.getElementById('balance-status');
+            var session = await window.TWD_AUTH.getSession();
+            if (!session) {
+                statusEl.textContent = 'Войдите, чтобы увидеть баланс.';
+                return;
+            }
+            var initialBalance = null;
+            for (var attempt = 0; attempt < 15; attempt++) {
+                try {
+                    var balance = await window.TWD_AUTH.getCreditBalance();
+                    if (initialBalance === null) initialBalance = balance;
+                    if (balance > initialBalance) {
+                        statusEl.textContent = 'Зачислено! Текущий баланс: ' + balance + ' кредит(ов).';
+                        return;
+                    }
+                    statusEl.textContent = 'Ждём подтверждения от банка… (' + balance + ' кредит(ов) сейчас)';
+                } catch (e) {
+                    // ignore, retry
+                }
+                await new Promise(function (r) { setTimeout(r, 2000); });
+            }
+            statusEl.textContent = 'Платёж может ещё обрабатываться. Если кредиты не пришли — напишите нам info@tryweddingdress.com.';
+        })();
+    </script>
+</body>
+</html>

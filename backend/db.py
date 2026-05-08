@@ -159,3 +159,121 @@ async def update_generation(generation_id: str, **fields: Any) -> None:
         json=fields,
         prefer="return=minimal",
     )
+
+
+# ---------------------------------------------------------------------------
+# payments
+# ---------------------------------------------------------------------------
+# Idempotency lives in the DB: `(processor, processor_id)` is UNIQUE in the
+# payments table, so a webhook replay just bounces with 23505 and we treat
+# that as "already fulfilled — do nothing". The wrappers below surface that
+# signal as a return value rather than an exception so the webhook handler
+# can stay flat.
+
+async def get_payment_by_processor_id(
+    processor: str, processor_id: str
+) -> Optional[dict[str, Any]]:
+    rows = await _request(
+        "GET",
+        "/rest/v1/payments",
+        params={
+            "select": "*",
+            "processor": f"eq.{processor}",
+            "processor_id": f"eq.{processor_id}",
+            "limit": "1",
+        },
+    )
+    if not rows:
+        return None
+    return rows[0]
+
+
+async def insert_payment(
+    *,
+    user_id: str,
+    processor: str,
+    processor_id: str,
+    amount_cents: int,
+    credits_granted: int,
+    status_value: str,
+    currency: str = "RUB",
+    raw_event: Optional[dict[str, Any]] = None,
+) -> Optional[str]:
+    """Insert a payments row.
+
+    Returns the new row id, or None if a row with the same
+    `(processor, processor_id)` already exists (idempotent replay).
+    """
+    body: dict[str, Any] = {
+        "user_id": user_id,
+        "processor": processor,
+        "processor_id": processor_id,
+        "amount_cents": amount_cents,
+        "currency": currency,
+        "credits_granted": credits_granted,
+        "status": status_value,
+    }
+    if raw_event is not None:
+        body["raw_event"] = raw_event
+
+    # Bypass _request's blanket 500 so we can detect the unique-violation.
+    headers = _service_headers()
+    headers["Prefer"] = "return=representation"
+    url = f"{SUPABASE_URL}/rest/v1/payments"
+    timeout = aiohttp.ClientTimeout(total=10)
+
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.post(url, json=body, headers=headers) as resp:
+            text = await resp.text()
+            if resp.status == 409 or "23505" in text:
+                # Unique violation on (processor, processor_id) — replay.
+                return None
+            if resp.status >= 400:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"DB error ({resp.status}): {text[:300]}",
+                )
+            data = await resp.json(content_type=None)
+            return data[0]["id"] if data else None
+
+
+async def update_payment_status(
+    payment_id: str,
+    *,
+    status_value: str,
+    raw_event: Optional[dict[str, Any]] = None,
+    credits_granted: Optional[int] = None,
+) -> None:
+    fields: dict[str, Any] = {"status": status_value}
+    if raw_event is not None:
+        fields["raw_event"] = raw_event
+    if credits_granted is not None:
+        fields["credits_granted"] = credits_granted
+    await _request(
+        "PATCH",
+        "/rest/v1/payments",
+        params={"id": f"eq.{payment_id}"},
+        json=fields,
+        prefer="return=minimal",
+    )
+
+
+async def has_purchase_grant(user_id: str, payment_row_id: str) -> bool:
+    """True if a credit_ledger 'purchase' row already exists for this payment.
+
+    Webhook-driven flows can fire twice for the same payment; the ledger has
+    no UNIQUE constraint on (reason, reference_id), so we guard the grant
+    ourselves with this lookup before inserting.
+    """
+    rows = await _request(
+        "GET",
+        "/rest/v1/credit_ledger",
+        params={
+            "select": "id",
+            "user_id": f"eq.{user_id}",
+            "reason": "eq.purchase",
+            "reference_id": f"eq.{payment_row_id}",
+            "limit": "1",
+        },
+    )
+    return bool(rows)

@@ -3,18 +3,32 @@ import json
 import uuid
 import base64
 import asyncio
+import ipaddress
+import logging
 from pathlib import Path
 from typing import Optional
 
 import aiohttp
 import aiofiles
-from fastapi import Depends, FastAPI, UploadFile, File, Form, HTTPException, status
+from fastapi import (
+    Depends,
+    FastAPI,
+    UploadFile,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field, HttpUrl
 
 from backend.auth import AuthedUser, require_user
-from backend import db
+from backend import db, payments
+
+logger = logging.getLogger("twd.api")
 
 app = FastAPI(title="Wedding Dress Try-On API", version="1.0.0")
 
@@ -341,9 +355,273 @@ async def try_on(
         raise HTTPException(status_code=500, detail=f"Generation failed: {exc}")
 
 
+# ---------------------------------------------------------------------------
+# Credit packs + YooKassa checkout
+# ---------------------------------------------------------------------------
+# Three one-time RUB packs locked in W3 (1490₽/10, 2290₽/30, 4690₽/80).
+# YooKassa is the only processor we ship for now — Stripe blocks Russian
+# merchants. The frontend reads /api/credit-packs to render the buy modal,
+# POSTs /api/checkout with a pack_id and gets back a confirmation_url, and
+# YooKassa POSTs /api/yookassa/webhook when the payment settles.
+
+# Default YooKassa webhook source IPs (CIDR + single IPs).
+# https://yookassa.ru/developers/using-api/webhooks#ip
+_YOOKASSA_DEFAULT_IP_NETWORKS = [
+    "185.71.76.0/27",
+    "185.71.77.0/27",
+    "77.75.153.0/25",
+    "77.75.156.11/32",
+    "77.75.156.35/32",
+    "77.75.154.128/25",
+    "2a02:5180::/32",
+]
+
+
+def _parse_ip_networks(raw: str) -> list[ipaddress._BaseNetwork]:
+    nets: list[ipaddress._BaseNetwork] = []
+    for token in raw.split(","):
+        token = token.strip()
+        if not token:
+            continue
+        try:
+            nets.append(ipaddress.ip_network(token, strict=False))
+        except ValueError:
+            logger.warning("Ignoring malformed YooKassa allowlist entry: %r", token)
+    return nets
+
+
+_YOOKASSA_ALLOWLIST = _parse_ip_networks(
+    os.environ.get(
+        "YOOKASSA_WEBHOOK_IPS_ALLOWLIST",
+        ",".join(_YOOKASSA_DEFAULT_IP_NETWORKS),
+    )
+)
+_YOOKASSA_DISABLE_IP_CHECK = os.environ.get("YOOKASSA_DISABLE_IP_CHECK", "") == "1"
+
+
+def _request_remote_ip(request: Request) -> Optional[str]:
+    # Trust X-Forwarded-For only when running behind a known reverse proxy.
+    # For the dev box we just look at the immediate peer; in production we
+    # fly behind Cloudflare/nginx, which we'll wire up in W3 deploy.
+    fwd = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    if fwd:
+        return fwd
+    return request.client.host if request.client else None
+
+
+def _is_yookassa_ip(ip: Optional[str]) -> bool:
+    if _YOOKASSA_DISABLE_IP_CHECK:
+        return True
+    if not _YOOKASSA_ALLOWLIST:
+        # Empty allowlist means "trust any IP" — useful for dev / loopback.
+        return True
+    if not ip:
+        return False
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    return any(addr in net for net in _YOOKASSA_ALLOWLIST)
+
+
+class CheckoutRequest(BaseModel):
+    pack_id: str = Field(..., description="Credit pack key, e.g. 'starter'")
+    return_url: HttpUrl = Field(
+        ...,
+        description="Where YooKassa should redirect the customer after payment",
+    )
+
+
+@app.get("/api/credit-packs")
+async def get_credit_packs():
+    """Public list of credit packs for the frontend buy modal."""
+    return [
+        {
+            "id": p.id,
+            "name": p.name,
+            "credits": p.credits,
+            "amount_rub": p.amount_rub,
+            "currency": "RUB",
+        }
+        for p in payments.CREDIT_PACKS.values()
+    ]
+
+
+@app.post("/api/checkout")
+async def create_checkout(
+    body: CheckoutRequest,
+    user: AuthedUser = Depends(require_user),
+):
+    """Create a YooKassa payment and hand the user the confirmation URL.
+
+    The payment is created with `metadata.user_id` and `metadata.pack_id`
+    so the webhook handler can fulfill credits without trusting any state
+    from the browser.
+    """
+    pack = payments.get_pack(body.pack_id)
+    yk_payment = await payments.create_payment(
+        pack=pack,
+        user_id=user.id,
+        user_email=user.email or "",
+        return_url=str(body.return_url),
+    )
+    confirmation = (yk_payment.get("confirmation") or {})
+    confirmation_url = confirmation.get("confirmation_url")
+    if not confirmation_url:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="YooKassa did not return a confirmation URL",
+        )
+
+    # Record the intent in our DB up front so we have a paper trail even
+    # for payments that never settle. The webhook will flip this row to
+    # 'succeeded' (and grant credits) or 'failed'.
+    await db.insert_payment(
+        user_id=user.id,
+        processor="yookassa",
+        processor_id=yk_payment["id"],
+        amount_cents=pack.amount_cents,
+        credits_granted=0,  # filled in on succeeded webhook
+        status_value="pending",
+        currency="RUB",
+        raw_event={"intent": yk_payment},
+    )
+
+    return {
+        "payment_id": yk_payment["id"],
+        "confirmation_url": confirmation_url,
+        "amount_rub": pack.amount_rub,
+        "credits": pack.credits,
+    }
+
+
+@app.post("/api/yookassa/webhook")
+async def yookassa_webhook(request: Request):
+    """Handle a YooKassa notification.
+
+    Verification chain:
+      1. Source IP must be in the YooKassa allowlist
+         (overridable via YOOKASSA_WEBHOOK_IPS_ALLOWLIST / disable env).
+      2. We re-fetch the payment server-to-server with our shop creds
+         and trust ONLY that response — never the body that came in.
+
+    We respond 200 even on no-op replays so YooKassa stops retrying.
+    """
+    remote_ip = _request_remote_ip(request)
+    if not _is_yookassa_ip(remote_ip):
+        logger.warning("Rejected YooKassa webhook from untrusted IP: %s", remote_ip)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="forbidden")
+
+    try:
+        notification = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="invalid JSON")
+
+    obj = notification.get("object") or {}
+    payment_id = obj.get("id")
+    if not payment_id:
+        raise HTTPException(status_code=400, detail="missing payment id")
+
+    # Re-fetch the payment from YooKassa with our creds. This is the
+    # authoritative source of truth — anyone could POST to our webhook
+    # endpoint, but only the real shop credentials can read /payments/{id}
+    # back from the YooKassa API.
+    try:
+        verified = await payments.fetch_payment(payment_id)
+    except HTTPException as exc:
+        # If verification itself fails, return 502 so YooKassa retries.
+        logger.warning("YooKassa verification failed for %s: %s", payment_id, exc.detail)
+        raise
+
+    yk_status = verified.get("status")
+    metadata = verified.get("metadata") or {}
+    user_id = metadata.get("user_id")
+    pack_id = metadata.get("pack_id")
+
+    if not user_id or not pack_id:
+        # Payment created outside our flow (manual test in YK dashboard,
+        # legacy webhook, etc.) — ack and move on.
+        logger.info("Ignoring YooKassa payment %s without our metadata", payment_id)
+        return {"status": "ignored", "reason": "missing_metadata"}
+
+    pack = payments.CREDIT_PACKS.get(pack_id)
+    if not pack:
+        logger.error("YooKassa payment %s has unknown pack_id=%s", payment_id, pack_id)
+        return {"status": "ignored", "reason": "unknown_pack"}
+
+    existing = await db.get_payment_by_processor_id("yookassa", payment_id)
+
+    if yk_status == "succeeded":
+        # Idempotency: if we've already marked this row as succeeded with
+        # credits granted, the credit ledger already has the +N row keyed
+        # to this payment id — skip a second grant.
+        if existing and existing.get("status") == "succeeded" and existing.get("credits_granted"):
+            return {"status": "already_fulfilled", "payment_id": payment_id}
+
+        if existing:
+            payment_row_id = existing["id"]
+            await db.update_payment_status(
+                payment_row_id,
+                status_value="succeeded",
+                raw_event=verified,
+                credits_granted=pack.credits,
+            )
+        else:
+            payment_row_id = await db.insert_payment(
+                user_id=user_id,
+                processor="yookassa",
+                processor_id=payment_id,
+                amount_cents=pack.amount_cents,
+                credits_granted=pack.credits,
+                status_value="succeeded",
+                currency="RUB",
+                raw_event=verified,
+            )
+
+        # Grant the credits. credit_ledger has no UNIQUE on (reason,
+        # reference_id), so we guard the grant ourselves before inserting.
+        if payment_row_id and not await db.has_purchase_grant(user_id, payment_row_id):
+            await db.insert_credit(
+                user_id=user_id,
+                amount=pack.credits,
+                reason="purchase",
+                reference_id=payment_row_id,
+                notes=f"YooKassa pack={pack_id} payment={payment_id}",
+            )
+
+        return {"status": "fulfilled", "payment_id": payment_id, "credits": pack.credits}
+
+    if yk_status in ("canceled", "expired"):
+        if existing:
+            await db.update_payment_status(
+                existing["id"],
+                status_value="failed",
+                raw_event=verified,
+            )
+        else:
+            await db.insert_payment(
+                user_id=user_id,
+                processor="yookassa",
+                processor_id=payment_id,
+                amount_cents=pack.amount_cents,
+                credits_granted=0,
+                status_value="failed",
+                currency="RUB",
+                raw_event=verified,
+            )
+        return {"status": "marked_failed", "payment_id": payment_id}
+
+    # Pending / waiting_for_capture / etc. — ack and wait for a follow-up.
+    return {"status": "ack", "payment_id": payment_id, "yookassa_status": yk_status}
+
+
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "api_key_set": bool(FASHN_API_KEY)}
+    return {
+        "status": "ok",
+        "api_key_set": bool(FASHN_API_KEY),
+        "yookassa_configured": payments.yookassa_configured(),
+    }
 
 
 # Serve frontend static files (must be last)

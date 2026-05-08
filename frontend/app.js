@@ -74,8 +74,8 @@ async function loadExamples() {
                 <div class="example-images">
                     <img src="${API}${ex.before}" alt="Before" loading="lazy">
                     <img src="${API}${ex.after}" alt="After" loading="lazy">
-                    <span class="example-label before">Before</span>
-                    <span class="example-label after">After</span>
+                    <span class="example-label before">До</span>
+                    <span class="example-label after">После</span>
                 </div>
             </div>
         `).join('');
@@ -100,11 +100,11 @@ function buildFilters() {
     const styles = [...new Set(catalogData.map(d => d.style))].sort();
 
     const colorContainer = document.getElementById('color-filters');
-    colorContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setColorFilter(\'all\', this)">All</button>' +
+    colorContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setColorFilter(\'all\', this)">Все</button>' +
         colors.map(c => `<button class="filter-pill" data-filter="${c}" onclick="setColorFilter('${c}', this)">${c}</button>`).join('');
 
     const styleContainer = document.getElementById('style-filters');
-    styleContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setStyleFilter(\'all\', this)">All</button>' +
+    styleContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setStyleFilter(\'all\', this)">Все</button>' +
         styles.map(s => `<button class="filter-pill" data-filter="${s}" onclick="setStyleFilter('${s}', this)">${s}</button>`).join('');
 }
 
@@ -131,12 +131,12 @@ function renderCatalog() {
 
     const grid = document.getElementById('dress-catalog');
     if (filtered.length === 0) {
-        grid.innerHTML = '<p class="no-results">No dresses match the selected filters</p>';
+        grid.innerHTML = '<p class="no-results">Нет платьев по выбранным фильтрам</p>';
         return;
     }
     grid.innerHTML = filtered.map(dress => `
         <div class="dress-card ${selectedDressId === dress.id ? 'selected' : ''}" data-id="${dress.id}" onclick="openDressModal('${dress.id}')">
-            <span class="selected-badge">Selected</span>
+            <span class="selected-badge">Выбрано</span>
             <span class="zoom-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
             </span>
@@ -192,9 +192,9 @@ function openDressModal(id) {
     if (dress.source_url) {
         sourceLink.href = dress.source_url;
         const retailerName = (dress.source && dress.source.includes('davidsbridal')) ? "David's Bridal" : (dress.source || 'retailer');
-        sourceLink.innerHTML = `View on ${retailerName} &rarr;`;
+        sourceLink.innerHTML = `Открыть на ${retailerName} &rarr;`;
         sourceLink.style.display = '';
-        attribution.innerHTML = `Photo and product details courtesy of <a href="${dress.source_url}" target="_blank" rel="noopener">${retailerName}</a>. Used for demonstration purposes.`;
+        attribution.innerHTML = `Фото и описание предоставлены <a href="${dress.source_url}" target="_blank" rel="noopener">${retailerName}</a>. Используются в демонстрационных целях.`;
         attribution.style.display = '';
     } else {
         sourceLink.style.display = 'none';
@@ -202,7 +202,7 @@ function openDressModal(id) {
     }
 
     const btn = document.querySelector('.modal-select-btn');
-    btn.textContent = (selectedDressId === id) ? 'Selected — close' : 'Use this dress';
+    btn.textContent = (selectedDressId === id) ? 'Выбрано — закрыть' : 'Выбрать это платье';
     document.getElementById('dress-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
@@ -303,7 +303,7 @@ async function uploadPhoto(file) {
         }
         if (!res.ok) {
             const err = await res.json().catch(function () { return {}; });
-            alert('Failed to upload photo: ' + (err.detail || res.statusText));
+            alert('Не удалось загрузить фото: ' + (err.detail || res.statusText));
             removePhoto();
             return;
         }
@@ -311,7 +311,7 @@ async function uploadPhoto(file) {
         uploadedPhotoId = data.file_id;
         updateGenerateBtn();
     } catch (e) {
-        alert('Failed to upload photo. Please try again.');
+        alert('Не удалось загрузить фото. Попробуйте ещё раз.');
         removePhoto();
     }
 }
@@ -356,7 +356,7 @@ function updateGenerateBtn() {
 async function generateTryOn() {
     const btn = document.getElementById('generate-btn');
     btn.disabled = true;
-    btn.textContent = 'Generating...';
+    btn.textContent = 'Создаём…';
 
     document.getElementById('result-placeholder').style.display = 'none';
     document.getElementById('result-image').style.display = 'none';
@@ -395,7 +395,7 @@ async function generateTryOn() {
         }
         if (!res.ok) {
             const err = await res.json().catch(function () { return {}; });
-            throw new Error(err.detail || 'Generation failed');
+            throw new Error(err.detail || 'Не удалось создать изображение');
         }
         const data = await res.json();
 
@@ -407,10 +407,10 @@ async function generateTryOn() {
     } catch (e) {
         document.getElementById('result-loading').style.display = 'none';
         document.getElementById('result-placeholder').style.display = 'block';
-        alert('Error: ' + e.message);
+        alert('Ошибка: ' + e.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Try It On';
+        btn.textContent = 'Примерить';
         updateGenerateBtn();
     }
 }
