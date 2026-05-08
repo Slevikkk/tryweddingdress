@@ -8,10 +8,13 @@ from typing import Optional
 
 import aiohttp
 import aiofiles
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import Depends, FastAPI, UploadFile, File, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+from backend.auth import AuthedUser, require_user
+from backend import db
 
 app = FastAPI(title="Wedding Dress Try-On API", version="1.0.0")
 
@@ -71,12 +74,33 @@ async def get_examples():
     return examples
 
 
+def _user_uploads_dir(user_id: str) -> Path:
+    """Per-user subfolder under UPLOADS_DIR.
+
+    Keeps photos namespaced so we can:
+      a) list a user's uploads without scanning the whole tree, and
+      b) clean up easily on account deletion.
+    """
+    p = UPLOADS_DIR / user_id
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _user_results_dir(user_id: str) -> Path:
+    p = RESULTS_DIR / user_id
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
 @app.post("/api/upload-photo")
-async def upload_photo(file: UploadFile = File(...)):
+async def upload_photo(
+    file: UploadFile = File(...),
+    user: AuthedUser = Depends(require_user),
+):
     ext = Path(file.filename or "photo.jpg").suffix or ".jpg"
     file_id = str(uuid.uuid4())
     filename = f"{file_id}{ext}"
-    filepath = UPLOADS_DIR / filename
+    filepath = _user_uploads_dir(user.id) / filename
 
     async with aiofiles.open(filepath, "wb") as f:
         content = await file.read()
@@ -130,10 +154,10 @@ async def poll_result(prediction_id: str, max_wait: int = 120) -> list[str]:
         for _ in range(max_wait // 2):
             async with session.get(url, headers=headers) as resp:
                 data = await resp.json()
-                status = data.get("status")
-                if status == "completed":
+                status_value = data.get("status")
+                if status_value == "completed":
                     return data.get("output", [])
-                if status == "failed":
+                if status_value == "failed":
                     raise HTTPException(
                         status_code=500,
                         detail=f"Generation failed: {data.get('error', 'unknown')}",
@@ -143,64 +167,178 @@ async def poll_result(prediction_id: str, max_wait: int = 120) -> list[str]:
     raise HTTPException(status_code=504, detail="Generation timed out")
 
 
-async def download_result(url: str, result_id: str) -> str:
+async def download_result(url: str, user_id: str, result_id: str) -> str:
+    """Save the generated image under results/<user_id>/<result_id>.png and
+    return the URL path the frontend should fetch.
+    """
     filename = f"{result_id}.png"
-    filepath = RESULTS_DIR / filename
+    filepath = _user_results_dir(user_id) / filename
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:
                 async with aiofiles.open(filepath, "wb") as f:
                     await f.write(await resp.read())
-    return filename
+    return f"/results/{user_id}/{filename}"
+
+
+def _find_user_upload(user_id: str, file_id: str) -> Optional[Path]:
+    user_dir = UPLOADS_DIR / user_id
+    if not user_dir.exists():
+        return None
+    for f in user_dir.iterdir():
+        if f.stem == file_id:
+            return f
+    return None
 
 
 @app.post("/api/try-on")
 async def try_on(
+    user: AuthedUser = Depends(require_user),
     model_photo_id: str = Form(...),
     dress_id: Optional[str] = Form(None),
     dress_file: Optional[UploadFile] = File(None),
 ):
+    """Run a try-on for the authenticated user.
+
+    Sequence:
+      1. Validate FASHN config and inputs.
+      2. Check the user has at least 1 credit.
+      3. Insert a `generations` row in 'pending' state.
+      4. Deduct 1 credit, referencing the generation row.
+      5. Submit to FASHN, poll for completion, download the result.
+      6. On success: mark the generation 'completed' with the result URL.
+      7. On any failure after step 4: refund the credit and mark the
+         generation 'failed' with the error message.
+    """
     if not FASHN_API_KEY:
         raise HTTPException(status_code=500, detail="FASHN API key not configured")
 
-    model_path = None
-    for f in UPLOADS_DIR.iterdir():
-        if f.stem == model_photo_id:
-            model_path = f
-            break
+    model_path = _find_user_upload(user.id, model_photo_id)
     if not model_path or not model_path.exists():
         raise HTTPException(status_code=404, detail="Model photo not found")
 
+    # Resolve the dress source (catalog item or uploaded file) and capture
+    # the metadata we'll write to the generations row.
+    dress_path: Path
+    dress_label_id: str
+    dress_label_name: str
+    dress_label_image_url: str
+
     if dress_file and dress_file.filename:
         ext = Path(dress_file.filename).suffix or ".jpg"
-        dress_path = UPLOADS_DIR / f"dress_{uuid.uuid4()}{ext}"
+        dress_path = _user_uploads_dir(user.id) / f"dress_{uuid.uuid4()}{ext}"
         async with aiofiles.open(dress_path, "wb") as f:
             await f.write(await dress_file.read())
+        dress_label_id = "custom"
+        dress_label_name = "Custom upload"
+        dress_label_image_url = ""
     elif dress_id:
         catalog = load_catalog()
         dress_item = next((d for d in catalog if d["id"] == dress_id), None)
         if not dress_item:
             raise HTTPException(status_code=404, detail="Dress not found in catalog")
         dress_path = CATALOG_DIR / dress_item["image"]
+        dress_label_id = dress_item["id"]
+        dress_label_name = dress_item.get("name", dress_item["id"])
+        dress_label_image_url = f"/catalog-images/{dress_item['image']}"
     else:
         raise HTTPException(status_code=400, detail="Must provide dress_id or dress_file")
 
-    model_b64 = await image_to_base64(model_path)
-    product_b64 = await image_to_base64(dress_path)
+    # 2. Credit check (cheap fail-fast before doing any expensive work).
+    balance = await db.get_credit_balance(user.id)
+    if balance < 1:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Out of credits",
+        )
 
-    prediction_id = await submit_tryon(model_b64, product_b64)
-    output_urls = await poll_result(prediction_id)
+    # 3. Record the generation in 'pending' state up-front so the UI can
+    #    surface it immediately and so we have a stable id to reference
+    #    from the credit ledger.
+    generation_id = await db.insert_generation(
+        user_id=user.id,
+        dress_id=dress_label_id,
+        dress_name=dress_label_name,
+        dress_image_url=dress_label_image_url,
+        # input_photo_url left null: we don't expose /uploads via a public
+        # static mount, so a stored path here would just be a dead link.
+        # The dashboard only renders dress_image_url + result_photo_url.
+        input_photo_url=None,
+        status_value="pending",
+    )
 
-    if not output_urls:
-        raise HTTPException(status_code=500, detail="No output images received")
+    # 4. Deduct a credit. Single ledger insert; if the user races multiple
+    #    requests they may temporarily oversend, but a follow-up balance
+    #    check on the next call will make them pay it back. Tightening
+    #    this to a transactional spend is W3 work.
+    await db.insert_credit(
+        user_id=user.id,
+        amount=-1,
+        reason="generation",
+        reference_id=generation_id,
+        notes="Try-on generation request",
+    )
 
-    result_id = str(uuid.uuid4())
-    result_filename = await download_result(output_urls[0], result_id)
+    # 5. Run the generation. From here, any exception → refund + 'failed'.
+    try:
+        await db.update_generation(generation_id, status="running")
 
-    return {
-        "result_id": result_id,
-        "result_url": f"/results/{result_filename}",
-    }
+        model_b64 = await image_to_base64(model_path)
+        product_b64 = await image_to_base64(dress_path)
+
+        prediction_id = await submit_tryon(model_b64, product_b64)
+        output_urls = await poll_result(prediction_id)
+        if not output_urls:
+            raise HTTPException(status_code=500, detail="No output images received")
+
+        result_id = str(uuid.uuid4())
+        result_url = await download_result(output_urls[0], user.id, result_id)
+
+        await db.update_generation(
+            generation_id,
+            status="completed",
+            result_photo_url=result_url,
+            fashn_request_id=prediction_id,
+            completed_at="now()",
+        )
+
+        return {
+            "generation_id": generation_id,
+            "result_id": result_id,
+            "result_url": result_url,
+            "credits_remaining": balance - 1,
+        }
+
+    except HTTPException as exc:
+        # Refund and record the failure. We re-raise the original error so
+        # the client sees the real reason (FASHN error, timeout, etc.).
+        await db.insert_credit(
+            user_id=user.id,
+            amount=1,
+            reason="refund",
+            reference_id=generation_id,
+            notes=f"Refund for failed generation: {exc.detail!s}"[:500],
+        )
+        await db.update_generation(
+            generation_id,
+            status="failed",
+            error_message=str(exc.detail)[:500],
+        )
+        raise
+    except Exception as exc:
+        await db.insert_credit(
+            user_id=user.id,
+            amount=1,
+            reason="refund",
+            reference_id=generation_id,
+            notes=f"Refund for unexpected error: {exc!s}"[:500],
+        )
+        await db.update_generation(
+            generation_id,
+            status="failed",
+            error_message=str(exc)[:500],
+        )
+        raise HTTPException(status_code=500, detail=f"Generation failed: {exc}")
 
 
 @app.get("/api/health")
