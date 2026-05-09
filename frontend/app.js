@@ -65,15 +65,18 @@ function showPage(page) {
 }
 
 async function loadExamples() {
+    // Static JSON bundled with the site (Cloudflare Pages has no backend);
+    // images are served from /examples/* by the Pages deploy itself.
     try {
-        const res = await fetch(API + '/api/examples');
+        const res = await fetch('/api/examples.json', { cache: 'no-cache' });
         const examples = await res.json();
         const grid = document.getElementById('examples-grid');
+        if (!grid) return;
         grid.innerHTML = examples.map(ex => `
             <div class="example-card">
                 <div class="example-images">
-                    <img src="${API}${ex.before}" alt="Before" loading="lazy">
-                    <img src="${API}${ex.after}" alt="After" loading="lazy">
+                    <img src="${ex.before}" alt="До" loading="lazy">
+                    <img src="${ex.after}" alt="После" loading="lazy">
                     <span class="example-label before">До</span>
                     <span class="example-label after">После</span>
                 </div>
@@ -86,7 +89,7 @@ async function loadExamples() {
 
 async function loadCatalog() {
     try {
-        const res = await fetch(API + '/api/catalog');
+        const res = await fetch('/api/catalog.json', { cache: 'no-cache' });
         catalogData = await res.json();
         buildFilters();
         renderCatalog();
@@ -140,7 +143,7 @@ function renderCatalog() {
             <span class="zoom-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
             </span>
-            <img src="${API}${dress.image_url}" alt="${dress.name}" loading="lazy">
+            <img src="${dress.image_url}" alt="${dress.name}" loading="lazy">
             <div class="dress-info">
                 <div class="dress-name">${dress.name}</div>
                 <div class="dress-meta">
@@ -158,7 +161,7 @@ function openDressModal(id) {
     const dress = catalogData.find(d => d.id === id);
     if (!dress) return;
     modalDressId = id;
-    document.getElementById('modal-img').src = API + dress.image_url;
+    document.getElementById('modal-img').src = dress.image_url;
     document.getElementById('modal-img').alt = dress.name;
     document.getElementById('modal-name').textContent = dress.name;
     document.getElementById('modal-color').textContent = dress.color;

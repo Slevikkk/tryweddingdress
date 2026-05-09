@@ -69,6 +69,28 @@
     <script src="config.js"></script>
     <script src="auth.js"></script>
     <script>
+        function translateAuthError(err) {
+            if (!err) return 'Не удалось войти. Проверьте email и пароль.';
+            var msg = String(err.message || '').toLowerCase();
+            var code = String(err.code || '').toLowerCase();
+            if (msg.indexOf('invalid login credentials') >= 0 || code === 'invalid_credentials') {
+                return 'Неверный email или пароль.';
+            }
+            if (msg.indexOf('email not confirmed') >= 0 || code === 'email_not_confirmed') {
+                return 'Email не подтверждён. Проверьте почту и перейдите по ссылке из письма.';
+            }
+            if (msg.indexOf('rate limit') >= 0 || code === 'over_request_rate_limit' || code === 'over_email_send_rate_limit') {
+                return 'Слишком много попыток. Попробуйте через минуту.';
+            }
+            if (msg.indexOf('user not found') >= 0 || code === 'user_not_found') {
+                return 'Аккаунт с таким email не найден.';
+            }
+            if (msg.indexOf('failed to fetch') >= 0 || msg.indexOf('network') >= 0) {
+                return 'Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.';
+            }
+            return 'Не удалось войти. Проверьте email и пароль.';
+        }
+
         var qs = new URLSearchParams(window.location.search);
         var errorBox = document.getElementById('error-box');
         var infoBox = document.getElementById('info-box');
@@ -111,7 +133,7 @@
             btn.textContent = 'Войти';
 
             if (resp.error) {
-                errorBox.textContent = resp.error.message || 'Не удалось войти. Проверьте email и пароль.';
+                errorBox.textContent = translateAuthError(resp.error);
                 errorBox.classList.add('visible');
                 return;
             }
@@ -132,7 +154,7 @@
             }
             var resp = await window.TWD_AUTH.resetPassword(email);
             if (resp.error) {
-                errorBox.textContent = resp.error.message || 'Не удалось отправить письмо. Попробуйте ещё раз.';
+                errorBox.textContent = translateAuthError(resp.error);
                 errorBox.classList.add('visible');
                 return;
             }

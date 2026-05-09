@@ -9,15 +9,87 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="auth.css">
+    <style>
+        /* ===== Homepage hero (magazine layout) ===== */
+        .hero-magazine {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            align-items: center; padding: 80px 24px 60px; max-width: 1200px;
+            margin: 0 auto;
+        }
+        .hero-magazine h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.6rem; line-height: 1.1; margin: 0 0 20px;
+            color: var(--text);
+        }
+        .hero-magazine .hero-sub {
+            font-size: 1.2rem; color: var(--text-light); margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        .hero-magazine .hero-trust {
+            display: flex; gap: 24px; margin-top: 28px;
+            color: var(--text-light); font-size: 0.92rem; flex-wrap: wrap;
+        }
+        .hero-magazine .hero-trust span { display: inline-flex; align-items: center; gap: 6px; }
+        .hero-magazine .hero-img {
+            border-radius: 24px; overflow: hidden; aspect-ratio: 4/5;
+            background: #f0e9e0; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.18);
+        }
+        .hero-magazine .hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .quote-strip {
+            background: #faf6f1; padding: 40px 24px; text-align: center;
+            font-family: 'Playfair Display', serif; font-size: 1.6rem; font-style: italic;
+            color: #5a4633; max-width: 900px; margin: 40px auto; border-radius: 16px;
+        }
+        .catalog-preview { max-width: 1200px; margin: 80px auto; padding: 0 24px; }
+        .catalog-preview h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            text-align: center; margin: 0 0 12px;
+        }
+        .catalog-preview .section-subtitle { text-align: center; margin-bottom: 36px; color: var(--text-light); }
+        .catalog-preview-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+        .catalog-preview-grid img {
+            width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px;
+            box-shadow: 0 6px 16px -8px rgba(0,0,0,0.15); cursor: pointer;
+        }
+        .catalog-preview .more-link { text-align: center; margin-top: 28px; }
+        .faq-section { max-width: 800px; margin: 80px auto; padding: 0 24px; }
+        .faq-section h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.2rem;
+            text-align: center; margin: 0 0 32px;
+        }
+        .faq-item { border-bottom: 1px solid #ece4d9; padding: 22px 0; }
+        .faq-item summary {
+            cursor: pointer; font-weight: 600; font-size: 1.05rem; padding: 4px 0;
+            list-style: none; position: relative; padding-right: 32px;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '+'; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            font-size: 1.6rem; color: var(--accent); font-weight: 300;
+        }
+        .faq-item[open] summary::after { content: '−'; }
+        .faq-item p { margin: 12px 0 0; color: var(--text-light); line-height: 1.6; }
+        .final-cta {
+            background: linear-gradient(135deg, #f7eee2 0%, #f3e3d0 100%);
+            padding: 80px 24px; text-align: center; margin-top: 40px;
+        }
+        .final-cta h2 { font-family: 'Playfair Display', serif; font-size: 2.6rem; margin: 0 0 16px; }
+        .final-cta p { font-size: 1.15rem; color: var(--text-light); margin-bottom: 28px; }
+        @media (max-width: 768px) {
+            .hero-magazine { grid-template-columns: 1fr; gap: 32px; padding: 40px 18px; }
+            .hero-magazine h1 { font-size: 2.4rem; }
+            .catalog-preview-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo" onclick="showPage('landing')">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="#examples" onclick="showPage('landing')">Примеры</a>
-                <a href="#" onclick="showPage('tryon')">Примерить</a>
-                <a href="#" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
+                <a href="#" class="nav-ghost" onclick="showPage('landing');return false;">Главная</a>
+                <a href="#" class="nav-ghost" onclick="showPage('tryon');return false;">Примерить</a>
+                <a href="#" class="nav-ghost" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
                 <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
                 <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
                 <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
@@ -28,20 +100,38 @@
 
     <!-- LANDING PAGE -->
     <div id="page-landing" class="page active">
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Увидь себя в платье своей мечты</h1>
-                <p class="hero-subtitle">Загрузи фото — увидь себя в любом свадебном платье за минуту. Без поездок в салон.</p>
-                <button class="btn-primary" onclick="showPage('tryon')">Примерить сейчас</button>
+        <section class="hero-magazine">
+            <div>
+                <h1>Платье вашей мечты — на вашем фото</h1>
+                <p class="hero-sub">Загрузите одну фотографию — увидьте, как на вас сидит любое свадебное платье. AI воспроизводит крой, ткань и кружево по реальной фотографии платья. За минуту, без поездок в салон.</p>
+                <a href="/pricing.html" class="btn-primary" style="display:inline-block;">Выбрать тариф</a>
+                <div class="hero-trust">
+                    <span>★ 4.8 средняя оценка</span>
+                    <span>· Оплата СБП и картой</span>
+                </div>
+            </div>
+            <div class="hero-img">
+                <img src="/examples/example_01/after.png" alt="Пример результата примерки">
             </div>
         </section>
 
-        <section id="examples" class="examples-section">
+        <div class="quote-strip">
+            «Свадебный салон у вас в телефоне. Только без чужих глаз и неловкости в раздевалке.»
+        </div>
+
+        <section id="examples" class="examples-section" style="background:#fff;">
             <h2>До и после</h2>
-            <p class="section-subtitle">Реальные результаты нашей AI-примерки</p>
+            <p class="section-subtitle">Реальные результаты — без фильтров и ретуши</p>
             <div id="examples-grid" class="examples-grid">
                 <!-- filled by JS -->
             </div>
+        </section>
+
+        <section class="catalog-preview">
+            <h2>Что в каталоге</h2>
+            <p class="section-subtitle">Десятки реальных платьев из коллекций известных брендов</p>
+            <div id="home-catalog-preview-grid" class="catalog-preview-grid"></div>
+            <p class="more-link"><a href="#" onclick="showPage('tryon');return false;" style="color:var(--accent-dark);font-weight:600;">Смотреть весь каталог →</a></p>
         </section>
 
         <section class="how-it-works">
@@ -50,7 +140,7 @@
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>Загрузите своё фото</h3>
-                    <p>В полный рост, в простой одежде</p>
+                    <p>В полный рост, в простой одежде, на простом фоне</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
@@ -60,9 +150,39 @@
                 <div class="step">
                     <div class="step-number">3</div>
                     <h3>Получите результат</h3>
-                    <p>Реалистичное фото за минуту</p>
+                    <p>Реалистичное фото за 60 секунд</p>
                 </div>
             </div>
+        </section>
+
+        <section class="faq-section">
+            <h2>Частые вопросы</h2>
+            <details class="faq-item">
+                <summary>Это безопасно? Куда денутся мои фото?</summary>
+                <p>Фото обрабатываются на защищённых серверах и удаляются после 30 дней. Мы не передаём их третьим лицам и не используем для обучения моделей.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Платье будет выглядеть точно как реальное?</summary>
+                <p>Да — мы используем технологию «exact garment transfer», которая переносит конкретное платье с фотографии, а не генерирует похожее. Видны кружево, рукав, силуэт.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Сколько стоит?</summary>
+                <p>От 1490 ₽ за пакет из 5 примерок (298 ₽ за примерку) до 4690 ₽ за 60 примерок (78 ₽ за примерку). Кредиты не сгорают.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Можно ли загрузить своё платье?</summary>
+                <p>Да. Если вашего платья нет в каталоге — загрузите его фото с витрины салона или с сайта бренда. AI справится.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Что если результат не понравится?</summary>
+                <p>Каждая примерка — это попытка. С пакетом из 20+ примерок можно попробовать разные платья и образы, выбрать лучший.</p>
+            </details>
+        </section>
+
+        <section class="final-cta">
+            <h2>Найдите своё платье</h2>
+            <p>Без салонов. Без поездок. За пять минут — десять образов.</p>
+            <a href="/pricing.html" class="btn-primary" style="display:inline-block;">Выбрать тариф</a>
         </section>
     </div>
 
@@ -83,7 +203,7 @@
                                 <polyline points="17 8 12 3 7 8"/>
                                 <line x1="12" y1="3" x2="12" y2="15"/>
                             </svg>
-                            <p>Перетащите фото в полный рост<br><span>или нажмите для выбора</span></p>
+                            <p>Перетащите фото в полный рост<br><span>желательно на простом фоне, без посторонних людей</span><br><span>или нажмите для выбора</span></p>
                         </div>
                         <div id="upload-preview" class="upload-preview" style="display:none;">
                             <img id="preview-img" src="" alt="Ваше фото">
@@ -275,5 +395,19 @@
     <script src="auth.js"></script>
     <script src="buy-credits.js"></script>
     <script src="app.js"></script>
+    <script>
+        // Render 6-image catalog preview on the homepage hero.
+        (async function renderHomeCatalogPreview() {
+            const grid = document.getElementById('home-catalog-preview-grid');
+            if (!grid) return;
+            try {
+                const res = await fetch('/api/catalog.json', { cache: 'no-cache' });
+                const cat = await res.json();
+                grid.innerHTML = cat.slice(0, 6).map(d =>
+                    `<img src="${d.image_url}" alt="${d.name}" loading="lazy" onclick="showPage('tryon')">`
+                ).join('');
+            } catch (e) { console.error('home catalog preview:', e); }
+        })();
+    </script>
 </body>
 </html>

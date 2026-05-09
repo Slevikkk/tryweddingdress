@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вариант B — Социальные доказательства · Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        /* ===== Variant B: Social Proof ===== */
+        .variant-tag {
+            position: fixed; top: 12px; right: 12px; z-index: 999;
+            background: #2c5b3e; color: #fff; padding: 6px 14px;
+            border-radius: 16px; font-size: 13px; font-weight: 600;
+        }
+        .hero-social {
+            text-align: center; padding: 80px 24px 40px; max-width: 900px; margin: 0 auto;
+        }
+        .hero-social h1 {
+            font-family: 'Playfair Display', serif; font-size: 3.4rem; line-height: 1.1;
+            margin: 0 0 18px;
+        }
+        .hero-social .hero-sub {
+            font-size: 1.2rem; color: var(--text-light); max-width: 700px;
+            margin: 0 auto 28px; line-height: 1.6;
+        }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+            max-width: 1100px; margin: 50px auto; padding: 40px 24px;
+            background: #faf6f1; border-radius: 20px; text-align: center;
+        }
+        .stat .num {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            color: var(--accent-dark); font-weight: 600; line-height: 1;
+        }
+        .stat .label { font-size: 0.95rem; color: var(--text-light); margin-top: 8px; }
+        .testimonials {
+            max-width: 1200px; margin: 80px auto; padding: 0 24px;
+        }
+        .testimonials h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            text-align: center; margin: 0 0 36px;
+        }
+        .testimonial-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .testimonial-card {
+            background: #fff; padding: 28px; border-radius: 14px;
+            box-shadow: 0 6px 24px -10px rgba(0,0,0,0.1);
+            border: 1px solid #f0e9e0;
+        }
+        .testimonial-stars { color: #e0a449; font-size: 1.2rem; margin-bottom: 12px; }
+        .testimonial-quote {
+            font-style: italic; color: #4a3d2f; line-height: 1.6; margin-bottom: 16px;
+        }
+        .testimonial-author {
+            display: flex; align-items: center; gap: 10px; font-size: 0.92rem;
+        }
+        .testimonial-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #e9d5b8, #d6b78a);
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 600; font-size: 0.85rem;
+        }
+        .trust-strip {
+            background: #fff; padding: 40px 24px; border-top: 1px solid #ece4d9;
+            border-bottom: 1px solid #ece4d9; margin: 60px 0;
+        }
+        .trust-strip-inner {
+            max-width: 1100px; margin: 0 auto; display: grid;
+            grid-template-columns: repeat(4, 1fr); gap: 32px; align-items: center;
+        }
+        .trust-item {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            text-align: center; color: var(--text-light); font-size: 0.92rem;
+        }
+        .trust-item .icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: #faf6f1; display: inline-flex; align-items: center; justify-content: center;
+            color: var(--accent-dark); font-size: 1.4rem;
+        }
+        .final-cta {
+            background: linear-gradient(135deg, #2c5b3e 0%, #1f4029 100%);
+            padding: 80px 24px; text-align: center; color: #fff;
+        }
+        .final-cta h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem; margin: 0 0 16px;
+        }
+        .final-cta p { font-size: 1.15rem; opacity: 0.9; margin-bottom: 28px; }
+        .final-cta .btn-primary { background: #fff; color: #2c5b3e; }
+        .final-cta .btn-primary:hover { background: #f0f0f0; color: #2c5b3e; }
+        @media (max-width: 768px) {
+            .hero-social h1 { font-size: 2.4rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .testimonial-grid { grid-template-columns: 1fr; }
+            .trust-strip-inner { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <span class="variant-tag">Вариант B · Соц. доказательства</span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/#tryon" class="nav-ghost">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost">Тарифы</a>
+                <a href="/login.html" class="nav-ghost">Вход</a>
+                <a href="/signup.html" class="nav-cta">Регистрация</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-social">
+        <h1>Невесты выбирают платья дома</h1>
+        <p class="hero-sub">Загрузите фото — увидьте себя в любом свадебном платье за минуту. Уже более тысячи невест нашли своё платье без салонов и стресса.</p>
+        <a href="/signup.html" class="btn-primary" style="display:inline-block;">Попробовать за 1490 ₽</a>
+    </section>
+
+    <div class="stats-row">
+        <div class="stat">
+            <div class="num">1 000+</div>
+            <div class="label">примерок</div>
+        </div>
+        <div class="stat">
+            <div class="num">60 сек</div>
+            <div class="label">средняя примерка</div>
+        </div>
+        <div class="stat">
+            <div class="num">4.8 ★</div>
+            <div class="label">средняя оценка</div>
+        </div>
+        <div class="stat">
+            <div class="num">от 78 ₽</div>
+            <div class="label">за примерку</div>
+        </div>
+    </div>
+
+    <section class="examples-section" style="background: #fff;">
+        <h2>До и после</h2>
+        <p class="section-subtitle">Реальные результаты — без фильтров и ретуши</p>
+        <div id="examples-grid" class="examples-grid"></div>
+    </section>
+
+    <section class="testimonials">
+        <h2>Что пишут невесты</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+                <p class="testimonial-quote">«Не пришлось ехать в салон чтобы понять, что русалка мне точно не идёт. Сэкономила выходной и кучу нервов.»</p>
+                <div class="testimonial-author">
+                    <span class="testimonial-avatar">А</span>
+                    <span>Анна, Москва</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+                <p class="testimonial-quote">«Реально похоже на меня в платье. Подружкам отправила в чат — никто не понял, что это не настоящие фото из салона.»</p>
+                <div class="testimonial-author">
+                    <span class="testimonial-avatar">М</span>
+                    <span>Мария, Санкт-Петербург</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">★ ★ ★ ★ ☆</div>
+                <p class="testimonial-quote">«Помогло мне сузить выбор с 30 платьев до 5. В салон уже шла зная что хочу — никто не давил.»</p>
+                <div class="testimonial-author">
+                    <span class="testimonial-avatar">Е</span>
+                    <span>Елена, Тамбов</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h2>Как это работает</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Загрузите фото</h3>
+                <p>В полный рост, в простой одежде, на простом фоне</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Выберите платье</h3>
+                <p>Из каталога или загрузите своё</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Готово</h3>
+                <p>Реалистичное фото за 60 секунд</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="trust-strip">
+        <div class="trust-strip-inner">
+            <div class="trust-item">
+                <span class="icon">🇷🇺</span>
+                <span>152-ФЗ<br><small>защита персональных данных</small></span>
+            </div>
+            <div class="trust-item">
+                <span class="icon">💳</span>
+                <span>ЮKassa<br><small>оплата СБП и картой</small></span>
+            </div>
+            <div class="trust-item">
+                <span class="icon">🔒</span>
+                <span>HTTPS + удаление фото<br><small>через 30 дней</small></span>
+            </div>
+            <div class="trust-item">
+                <span class="icon">🧾</span>
+                <span>Чек 54-ФЗ<br><small>после каждой покупки</small></span>
+            </div>
+        </div>
+    </div>
+
+    <section class="final-cta">
+        <h2>Ваше платье ждёт</h2>
+        <p>1490 ₽ — пять примерок. Кредиты не сгорают.</p>
+        <a href="/signup.html" class="btn-primary" style="display:inline-block;">Начать сейчас</a>
+    </section>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
+
+    <script>
+        (async function () {
+            try {
+                const exRes = await fetch('/api/examples.json');
+                const examples = await exRes.json();
+                const grid = document.getElementById('examples-grid');
+                grid.innerHTML = examples.map(ex => `
+                    <div class="example-card">
+                        <div class="example-images">
+                            <img src="${ex.before}" alt="До">
+                            <img src="${ex.after}" alt="После">
+                            <span class="example-label before">До</span>
+                            <span class="example-label after">После</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        })();
+    </script>
+</body>
+</html>

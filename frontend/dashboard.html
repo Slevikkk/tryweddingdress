@@ -140,8 +140,12 @@
                 (profile && profile.full_name) || user.email;
             if (profile && profile.created_at) {
                 var d = new Date(profile.created_at);
+                var MONTHS_GENITIVE = [
+                    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+                ];
                 document.getElementById('account-since').textContent =
-                    'С нами с ' + d.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long' });
+                    'С нами с ' + MONTHS_GENITIVE[d.getMonth()] + ' ' + d.getFullYear();
             }
 
             var balance = await window.TWD_AUTH.getCreditBalance();
