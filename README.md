@@ -42,14 +42,28 @@ pyproject.toml  Python dependencies for the backend.
 ### Backend
 
 ```bash
-# Set your FASHN API key
+# Generation
 export FASHN_API_KEY=sk-...
+
+# Auth + storage (Supabase)
+export SUPABASE_URL=https://uqevnxxorffumbzwldkx.supabase.co
+export SUPABASE_SERVICE_ROLE_KEY=eyJ...
+
+# YooKassa (W3, optional — endpoints return 503 until set)
+export YOOKASSA_SHOP_ID=...
+export YOOKASSA_SECRET_KEY=...
+# Local dev only — turn off the YooKassa source-IP allowlist so you can
+# replay webhooks from your own machine. Never set this in production.
+export YOOKASSA_DISABLE_IP_CHECK=1
 
 # Install deps and run
 uv sync           # or: pip install -e .
 uv run uvicorn backend.main:app --reload --port 8000
 # Open http://localhost:8000/  -> serves frontend/ + /api/* endpoints
 ```
+
+YooKassa registration walkthrough is in
+[`docs/yookassa_setup.md`](docs/yookassa_setup.md).
 
 ### Frontend in static-demo mode (no backend)
 

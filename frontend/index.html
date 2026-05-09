@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Try Wedding Dress — AI Virtual Try-On</title>
+    <title>Try Wedding Dress — Виртуальная примерка свадебного платья</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -15,12 +15,13 @@
         <div class="nav-container">
             <a href="#" class="logo" onclick="showPage('landing')">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="#examples" onclick="showPage('landing')">Examples</a>
-                <a href="#" onclick="showPage('tryon')">Try On</a>
-                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Log in</a>
-                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Sign up</a>
-                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Dashboard</a>
-                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost" data-auth="signed-in">Log out</a>
+                <a href="#examples" onclick="showPage('landing')">Примеры</a>
+                <a href="#" onclick="showPage('tryon')">Примерить</a>
+                <a href="#" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
+                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
+                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
+                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
+                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost" data-auth="signed-in">Выход</a>
             </div>
         </div>
     </nav>
@@ -29,37 +30,37 @@
     <div id="page-landing" class="page active">
         <section class="hero">
             <div class="hero-content">
-                <h1>See Yourself in Your Dream Wedding Dress</h1>
-                <p class="hero-subtitle">Upload your photo and try on wedding dresses instantly with AI. No appointment needed.</p>
-                <button class="btn-primary" onclick="showPage('tryon')">Try It Now</button>
+                <h1>Увидь себя в платье своей мечты</h1>
+                <p class="hero-subtitle">Загрузи фото — увидь себя в любом свадебном платье за минуту. Без поездок в салон.</p>
+                <button class="btn-primary" onclick="showPage('tryon')">Примерить сейчас</button>
             </div>
         </section>
 
         <section id="examples" class="examples-section">
-            <h2>Before & After</h2>
-            <p class="section-subtitle">Real results from our AI try-on technology</p>
+            <h2>До и после</h2>
+            <p class="section-subtitle">Реальные результаты нашей AI-примерки</p>
             <div id="examples-grid" class="examples-grid">
                 <!-- filled by JS -->
             </div>
         </section>
 
         <section class="how-it-works">
-            <h2>How It Works</h2>
+            <h2>Как это работает</h2>
             <div class="steps">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3>Upload Your Photo</h3>
-                    <p>Take a full-body photo in simple clothing</p>
+                    <h3>Загрузите своё фото</h3>
+                    <p>В полный рост, в простой одежде</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>Choose a Dress</h3>
-                    <p>Pick from our catalog or upload your own</p>
+                    <h3>Выберите платье</h3>
+                    <p>Из нашего каталога или загрузите своё</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>See the Result</h3>
-                    <p>Get a realistic photo in seconds</p>
+                    <h3>Получите результат</h3>
+                    <p>Реалистичное фото за минуту</p>
                 </div>
             </div>
         </section>
@@ -68,12 +69,12 @@
     <!-- TRY-ON PAGE -->
     <div id="page-tryon" class="page">
         <div class="tryon-container">
-            <h2>Virtual Try-On</h2>
+            <h2>Виртуальная примерка</h2>
 
             <div class="tryon-grid">
                 <!-- Step 1: Upload Photo -->
                 <div class="tryon-step">
-                    <h3>1. Your Photo</h3>
+                    <h3>1. Ваше фото</h3>
                     <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
                         <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)" hidden>
                         <div id="upload-placeholder" class="upload-placeholder" onclick="document.getElementById('photo-input').click()">
@@ -82,10 +83,10 @@
                                 <polyline points="17 8 12 3 7 8"/>
                                 <line x1="12" y1="3" x2="12" y2="15"/>
                             </svg>
-                            <p>Drag & drop your full-body photo<br><span>or click to select</span></p>
+                            <p>Перетащите фото в полный рост<br><span>или нажмите для выбора</span></p>
                         </div>
                         <div id="upload-preview" class="upload-preview" style="display:none;">
-                            <img id="preview-img" src="" alt="Your photo">
+                            <img id="preview-img" src="" alt="Ваше фото">
                             <button class="btn-remove" onclick="removePhoto()">&times;</button>
                         </div>
                     </div>
@@ -93,18 +94,18 @@
 
                 <!-- Step 2: Choose Dress -->
                 <div class="tryon-step">
-                    <h3>2. Choose Dress</h3>
+                    <h3>2. Выберите платье</h3>
                     <div class="catalog-filters">
                         <div class="filter-group">
-                            <label>Color:</label>
+                            <label>Цвет:</label>
                             <div id="color-filters" class="filter-pills">
-                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">All</button>
+                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">Все</button>
                             </div>
                         </div>
                         <div class="filter-group">
-                            <label>Style:</label>
+                            <label>Стиль:</label>
                             <div id="style-filters" class="filter-pills">
-                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">All</button>
+                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">Все</button>
                             </div>
                         </div>
                     </div>
@@ -113,11 +114,11 @@
                     </div>
                     <div class="upload-own-dress">
                         <label class="btn-secondary" style="cursor:pointer;">
-                            Upload your own dress photo
+                            Загрузить своё платье
                             <input type="file" id="custom-dress-input" accept="image/*" onchange="handleCustomDress(event)" hidden>
                         </label>
                         <div id="custom-dress-preview" style="display:none;margin-top:8px;">
-                            <img id="custom-dress-img" src="" alt="Custom dress" style="max-height:80px;border-radius:8px;">
+                            <img id="custom-dress-img" src="" alt="Ваше платье" style="max-height:80px;border-radius:8px;">
                             <button class="btn-remove-small" onclick="removeCustomDress()">&times;</button>
                         </div>
                     </div>
@@ -125,40 +126,44 @@
 
                 <!-- Step 3: Result -->
                 <div class="tryon-step result-step">
-                    <h3>3. Result</h3>
+                    <h3>3. Результат</h3>
                     <div id="result-area" class="result-area">
                         <div id="result-placeholder" class="result-placeholder">
-                            <p>Your result will appear here</p>
+                            <p>Здесь появится ваш результат</p>
                         </div>
                         <div id="result-loading" class="result-loading" style="display:none;">
                             <div class="spinner"></div>
-                            <p>Generating your look...<br><span>This takes 30-60 seconds</span></p>
+                            <p>Создаём ваш образ...<br><span>Это займёт 30-60 секунд</span></p>
                         </div>
                         <div id="result-image" style="display:none;">
-                            <img id="result-img" src="" alt="Try-on result">
+                            <img id="result-img" src="" alt="Результат примерки">
                         </div>
                     </div>
                     <div id="result-actions" class="result-actions" style="display:none;">
-                        <a id="download-btn" href="" download="wedding-dress-tryon.png" class="btn-primary">Download</a>
-                        <button class="btn-secondary" onclick="resetResult()">Try Another</button>
+                        <a id="download-btn" href="" download="wedding-dress-tryon.png" class="btn-primary">Скачать</a>
+                        <button class="btn-secondary" onclick="resetResult()">Ещё один образ</button>
                     </div>
                 </div>
             </div>
 
             <button id="generate-btn" class="btn-generate" onclick="generateTryOn()" disabled>
-                Try It On
+                Примерить
             </button>
         </div>
     </div>
 
     <footer>
-        <p>Powered by AI &middot; Photos are processed securely and not stored permanently</p>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
         <p style="margin-top:8px;">
-            <a href="/privacy.html" style="color:inherit;">Privacy</a>
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
             &nbsp;&middot;&nbsp;
-            <a href="/terms.html" style="color:inherit;">Terms</a>
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
             &nbsp;&middot;&nbsp;
-            <a href="mailto:info@tryweddingdress.com" style="color:inherit;">Contact</a>
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
         </p>
     </footer>
 
@@ -167,14 +172,14 @@
         <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeAuthRequiredModal()">&times;</button>
             <div style="padding:36px 32px;text-align:center;">
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">Sign in to try it on</h3>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">Войдите, чтобы примерить</h3>
                 <p style="color:#666;margin-bottom:24px;">
-                    Try-on is for signed-in users only. Log in or create an account
-                    to continue.
+                    Примерка доступна только зарегистрированным пользователям.
+                    Войдите или создайте аккаунт, чтобы продолжить.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;">
-                    <a href="#" class="btn-primary" onclick="goToLoginWithReturn();return false;">Log in</a>
-                    <a href="/signup.html" class="btn-secondary">Sign up</a>
+                    <a href="#" class="btn-primary" onclick="goToLoginWithReturn();return false;">Войти</a>
+                    <a href="/signup.html" class="btn-secondary">Регистрация</a>
                 </div>
             </div>
         </div>
@@ -185,15 +190,55 @@
         <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeOutOfCreditsModal()">&times;</button>
             <div style="padding:36px 32px;text-align:center;">
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">You're out of credits</h3>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:12px;">Закончились кредиты</h3>
                 <p style="color:#666;margin-bottom:24px;">
-                    Each try-on uses 1 credit. Paid top-ups are coming soon. In the
-                    meantime, drop us a line and we'll sort you out.
+                    За одну примерку списывается 1 кредит. Купите пакет, чтобы продолжить.
                 </p>
-                <div style="display:flex;gap:12px;justify-content:center;">
-                    <a href="/dashboard.html" class="btn-primary">View dashboard</a>
-                    <a href="mailto:info@tryweddingdress.com?subject=More%20credits%20please" class="btn-secondary">Contact us</a>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <a href="#" class="btn-primary" onclick="closeOutOfCreditsModal();openBuyCreditsModal();return false;">Купить кредиты</a>
+                    <a href="/dashboard.html" class="btn-secondary">Личный кабинет</a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUY CREDITS MODAL (3 pricing cards) -->
+    <div id="buy-credits-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeBuyCreditsModal()">
+        <div class="modal-content" style="max-width:760px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeBuyCreditsModal()">&times;</button>
+            <div style="padding:36px 32px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:8px;text-align:center;">Купить кредиты</h3>
+                <p style="color:#666;margin-bottom:24px;text-align:center;">
+                    1 кредит = 1 примерка. Кредиты не сгорают и хранятся в вашем аккаунте.
+                </p>
+                <div id="buy-credits-error" class="auth-error" role="alert" style="margin-bottom:16px;"></div>
+                <div class="pricing-grid">
+                    <div class="pricing-card" data-pack="starter">
+                        <div class="pricing-name">Старт</div>
+                        <div class="pricing-tries">5 примерок</div>
+                        <div class="pricing-price">1490 ₽</div>
+                        <div class="pricing-per">298 ₽ за примерку</div>
+                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('starter', this)">Купить</button>
+                    </div>
+                    <div class="pricing-card pricing-featured" data-pack="bride">
+                        <div class="pricing-badge">Выбор невест</div>
+                        <div class="pricing-name">Невеста</div>
+                        <div class="pricing-tries">20 примерок</div>
+                        <div class="pricing-price">2290 ₽</div>
+                        <div class="pricing-per">115 ₽ за примерку</div>
+                        <button class="btn-primary pricing-buy" onclick="buyCreditPack('bride', this)">Купить</button>
+                    </div>
+                    <div class="pricing-card" data-pack="full">
+                        <div class="pricing-name">Полный</div>
+                        <div class="pricing-tries">60 примерок</div>
+                        <div class="pricing-price">4690 ₽</div>
+                        <div class="pricing-per">78 ₽ за примерку</div>
+                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('full', this)">Купить</button>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:#888;margin-top:20px;text-align:center;">
+                    Оплата через ЮKassa: банковские карты, СБП, Apple Pay, Google Pay.
+                </p>
             </div>
         </div>
     </div>
@@ -216,8 +261,8 @@
                     </div>
                     <p id="modal-description"></p>
                     <div class="modal-actions">
-                        <button class="btn-primary modal-select-btn" onclick="selectDressFromModal()">Use this dress</button>
-                        <a id="modal-source-link" class="btn-secondary modal-source-link" href="#" target="_blank" rel="noopener" style="display:none;">View on David's Bridal &rarr;</a>
+                        <button class="btn-primary modal-select-btn" onclick="selectDressFromModal()">Выбрать это платье</button>
+                        <a id="modal-source-link" class="btn-secondary modal-source-link" href="#" target="_blank" rel="noopener" style="display:none;">Открыть на David's Bridal &rarr;</a>
                     </div>
                     <p class="modal-attribution" id="modal-attribution" style="display:none;"></p>
                 </div>
@@ -228,6 +273,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="auth.js"></script>
+    <script src="buy-credits.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

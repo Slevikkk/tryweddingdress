@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log in — Try Wedding Dress</title>
+    <title>Вход — Try Wedding Dress</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -15,16 +15,16 @@
         <div class="nav-container">
             <a href="/" class="logo">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="/" class="nav-ghost">Home</a>
-                <a href="/signup.html" class="nav-cta">Sign up</a>
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/signup.html" class="nav-cta">Регистрация</a>
             </div>
         </div>
     </nav>
 
     <div class="auth-shell">
         <div class="auth-card">
-            <h1>Welcome back</h1>
-            <p class="auth-subtitle">Log in to see your generation history.</p>
+            <h1>С возвращением</h1>
+            <p class="auth-subtitle">Войдите, чтобы посмотреть историю примерок.</p>
 
             <div id="error-box" class="auth-error" role="alert"></div>
             <div id="info-box" class="auth-info" role="status"></div>
@@ -35,20 +35,35 @@
                     <input type="email" id="email" name="email" autocomplete="email" required>
                 </div>
                 <div>
-                    <label for="password">Password</label>
+                    <label for="password">Пароль</label>
                     <input type="password" id="password" name="password" autocomplete="current-password" required>
                 </div>
-                <button type="submit" class="btn-primary">Log in</button>
+                <button type="submit" class="btn-primary">Войти</button>
             </form>
 
             <p class="auth-footer">
-                <a href="#" id="forgot-link">Forgot password?</a>
+                <a href="#" id="forgot-link">Забыли пароль?</a>
             </p>
             <p class="auth-footer" style="margin-top:8px;">
-                Don't have an account yet? <a href="/signup.html">Sign up</a>
+                Нет аккаунта? <a href="/signup.html">Зарегистрироваться</a>
             </p>
         </div>
     </div>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
@@ -59,13 +74,13 @@
         var infoBox = document.getElementById('info-box');
 
         if (qs.get('confirmed') === '1') {
-            infoBox.textContent = 'Email confirmed! You can now log in.';
+            infoBox.textContent = 'Email подтверждён. Теперь вы можете войти.';
             infoBox.classList.add('visible');
         } else if (qs.get('reset') === '1') {
-            infoBox.textContent = 'Password updated. Log in with your new password.';
+            infoBox.textContent = 'Пароль обновлён. Войдите с новым паролем.';
             infoBox.classList.add('visible');
         } else if (qs.get('reset_sent') === '1') {
-            infoBox.textContent = 'Check your email for a link to reset your password.';
+            infoBox.textContent = 'Проверьте почту — мы отправили ссылку для сброса пароля.';
             infoBox.classList.add('visible');
         }
 
@@ -88,15 +103,15 @@
 
             var btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.textContent = 'Signing in…';
+            btn.textContent = 'Входим…';
 
             var resp = await window.TWD_AUTH.signIn(email, password);
 
             btn.disabled = false;
-            btn.textContent = 'Log in';
+            btn.textContent = 'Войти';
 
             if (resp.error) {
-                errorBox.textContent = resp.error.message || 'Login failed. Please check your email and password.';
+                errorBox.textContent = resp.error.message || 'Не удалось войти. Проверьте email и пароль.';
                 errorBox.classList.add('visible');
                 return;
             }
@@ -111,17 +126,17 @@
             infoBox.classList.remove('visible'); infoBox.textContent = '';
             var email = document.getElementById('email').value.trim();
             if (!email) {
-                errorBox.textContent = 'Enter your email above first, then click "Forgot password" again.';
+                errorBox.textContent = 'Сначала введите email выше, потом нажмите «Забыли пароль» ещё раз.';
                 errorBox.classList.add('visible');
                 return;
             }
             var resp = await window.TWD_AUTH.resetPassword(email);
             if (resp.error) {
-                errorBox.textContent = resp.error.message || 'Could not send reset email. Try again later.';
+                errorBox.textContent = resp.error.message || 'Не удалось отправить письмо. Попробуйте ещё раз.';
                 errorBox.classList.add('visible');
                 return;
             }
-            infoBox.textContent = 'If an account exists for ' + email + ', a password reset email is on its way.';
+            infoBox.textContent = 'Если для ' + email + ' есть аккаунт, мы отправили ссылку для сброса пароля.';
             infoBox.classList.add('visible');
         });
     </script>

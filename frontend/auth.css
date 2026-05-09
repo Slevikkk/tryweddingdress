@@ -266,3 +266,106 @@
 .policy-shell a {
     color: var(--accent-dark);
 }
+
+/* ==========================================================================
+   Buy Credits modal — pricing cards
+   ========================================================================== */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+}
+@media (max-width: 720px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+}
+.pricing-card {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    text-align: center;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.pricing-card.pricing-featured {
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(197, 168, 128, 0.18);
+    transform: translateY(-4px);
+}
+.pricing-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+.pricing-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.pricing-tries {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+.pricing-price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.pricing-per {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+}
+.pricing-buy {
+    width: 100%;
+    margin-top: auto;
+}
+.pricing-buy[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+/* Checkout result pages */
+.checkout-shell {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 140px 24px 60px;
+    text-align: center;
+}
+.checkout-shell h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+}
+.checkout-shell p {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+.checkout-shell .checkout-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+.checkout-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    line-height: 1;
+}
