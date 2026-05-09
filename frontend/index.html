@@ -15,9 +15,9 @@
         <div class="nav-container">
             <a href="#" class="logo" onclick="showPage('landing')">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="#examples" onclick="showPage('landing')">Примеры</a>
-                <a href="#" onclick="showPage('tryon')">Примерить</a>
-                <a href="#" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
+                <a href="#" class="nav-ghost" onclick="showPage('landing');return false;">Главная</a>
+                <a href="#" class="nav-ghost" onclick="showPage('tryon');return false;">Примерить</a>
+                <a href="#" class="nav-ghost" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
                 <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
                 <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
                 <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
@@ -50,7 +50,7 @@
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>Загрузите своё фото</h3>
-                    <p>В полный рост, в простой одежде</p>
+                    <p>В полный рост, в простой одежде, на простом фоне</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
@@ -83,7 +83,7 @@
                                 <polyline points="17 8 12 3 7 8"/>
                                 <line x1="12" y1="3" x2="12" y2="15"/>
                             </svg>
-                            <p>Перетащите фото в полный рост<br><span>или нажмите для выбора</span></p>
+                            <p>Перетащите фото в полный рост<br><span>желательно на простом фоне, без посторонних людей</span><br><span>или нажмите для выбора</span></p>
                         </div>
                         <div id="upload-preview" class="upload-preview" style="display:none;">
                             <img id="preview-img" src="" alt="Ваше фото">

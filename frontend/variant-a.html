@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вариант A — Премиум · Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        /* ===== Variant A: Premium / Magazine ===== */
+        .variant-tag {
+            position: fixed; top: 12px; right: 12px; z-index: 999;
+            background: #111; color: #fff; padding: 6px 14px;
+            border-radius: 16px; font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
+        }
+        .hero-magazine {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            align-items: center; padding: 80px 24px 60px; max-width: 1200px;
+            margin: 0 auto;
+        }
+        .hero-magazine h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.6rem; line-height: 1.1; margin: 0 0 20px;
+            color: var(--text);
+        }
+        .hero-magazine .hero-sub {
+            font-size: 1.2rem; color: var(--text-light); margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        .hero-magazine .hero-trust {
+            display: flex; gap: 24px; margin-top: 28px;
+            color: var(--text-light); font-size: 0.92rem;
+        }
+        .hero-magazine .hero-trust span { display: inline-flex; align-items: center; gap: 6px; }
+        .hero-magazine .hero-img {
+            border-radius: 24px; overflow: hidden; aspect-ratio: 4/5;
+            background: #f0e9e0; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.18);
+        }
+        .hero-magazine .hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .quote-strip {
+            background: #faf6f1; padding: 40px 24px; text-align: center;
+            font-family: 'Playfair Display', serif; font-size: 1.6rem; font-style: italic;
+            color: #5a4633; max-width: 900px; margin: 40px auto; border-radius: 16px;
+        }
+        .catalog-preview {
+            max-width: 1200px; margin: 80px auto; padding: 0 24px;
+        }
+        .catalog-preview h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            text-align: center; margin: 0 0 12px;
+        }
+        .catalog-preview .section-subtitle { text-align: center; margin-bottom: 36px; color: var(--text-light); }
+        .catalog-preview-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;
+        }
+        .catalog-preview-grid img {
+            width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px;
+            box-shadow: 0 6px 16px -8px rgba(0,0,0,0.15);
+        }
+        .catalog-preview .more-link { text-align: center; margin-top: 28px; }
+        .faq-section {
+            max-width: 800px; margin: 80px auto; padding: 0 24px;
+        }
+        .faq-section h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.2rem;
+            text-align: center; margin: 0 0 32px;
+        }
+        .faq-item {
+            border-bottom: 1px solid #ece4d9; padding: 22px 0;
+        }
+        .faq-item summary {
+            cursor: pointer; font-weight: 600; font-size: 1.05rem; padding: 4px 0;
+            list-style: none; position: relative; padding-right: 32px;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after {
+            content: '+'; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            font-size: 1.6rem; color: var(--accent); font-weight: 300;
+        }
+        .faq-item[open] summary::after { content: '−'; }
+        .faq-item p { margin: 12px 0 0; color: var(--text-light); line-height: 1.6; }
+        .final-cta {
+            background: linear-gradient(135deg, #f7eee2 0%, #f3e3d0 100%);
+            padding: 80px 24px; text-align: center; margin-top: 40px;
+        }
+        .final-cta h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem; margin: 0 0 16px;
+        }
+        .final-cta p { font-size: 1.15rem; color: var(--text-light); margin-bottom: 28px; }
+        @media (max-width: 768px) {
+            .hero-magazine { grid-template-columns: 1fr; gap: 32px; padding: 40px 18px; }
+            .hero-magazine h1 { font-size: 2.4rem; }
+            .catalog-preview-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <span class="variant-tag">Вариант A · Премиум</span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/#tryon" class="nav-ghost">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost">Тарифы</a>
+                <a href="/login.html" class="nav-ghost">Вход</a>
+                <a href="/signup.html" class="nav-cta">Регистрация</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-magazine">
+        <div>
+            <h1>Платье вашей мечты — на вашем фото</h1>
+            <p class="hero-sub">Загрузите одну фотографию — увидьте, как на вас сидит любое свадебное платье. AI воспроизводит крой, ткань и кружево по реальной фотографии платья. За минуту, без поездок в салон.</p>
+            <a href="/signup.html" class="btn-primary" style="display:inline-block;">Примерить за 1490 ₽ / 5 платьев</a>
+            <div class="hero-trust">
+                <span>★ 4.8 средняя оценка</span>
+                <span>· Оплата СБП и картой</span>
+                <span>· 152-ФЗ</span>
+            </div>
+        </div>
+        <div class="hero-img">
+            <img src="/examples/example_01/after.png" alt="Пример результата примерки">
+        </div>
+    </section>
+
+    <div class="quote-strip">
+        «Свадебный салон у вас в телефоне. Только без чужих глаз и неловкости в раздевалке.»
+    </div>
+
+    <section class="examples-section" style="background: #fff;">
+        <h2>До и после</h2>
+        <p class="section-subtitle">Реальные результаты — без фильтров и ретуши</p>
+        <div id="examples-grid" class="examples-grid"></div>
+    </section>
+
+    <section class="catalog-preview">
+        <h2>Что в каталоге</h2>
+        <p class="section-subtitle">Десятки реальных платьев из коллекций известных брендов</p>
+        <div id="catalog-preview-grid" class="catalog-preview-grid"></div>
+        <p class="more-link"><a href="/" style="color: var(--accent-dark); font-weight: 600;">Смотреть весь каталог →</a></p>
+    </section>
+
+    <section class="how-it-works">
+        <h2>Как это работает</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Загрузите фото</h3>
+                <p>В полный рост, в простой одежде, на простом фоне</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Выберите платье</h3>
+                <p>Из каталога или загрузите своё</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Готово</h3>
+                <p>Реалистичное фото за 60 секунд</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <h2>Частые вопросы</h2>
+        <details class="faq-item">
+            <summary>Это безопасно? Куда денутся мои фото?</summary>
+            <p>Фото обрабатываются на защищённых серверах и удаляются после 30 дней. Мы не передаём их третьим лицам и не используем для обучения моделей.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Платье будет выглядеть точно как реальное?</summary>
+            <p>Да — мы используем технологию «exact garment transfer», которая переносит конкретное платье с фотографии, а не генерирует похожее. Видны кружево, рукав, силуэт.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Сколько стоит?</summary>
+            <p>От 1490 ₽ за пакет из 5 примерок (298 ₽ за примерку) до 4690 ₽ за 60 примерок (78 ₽ за примерку). Кредиты не сгорают.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Можно ли загрузить своё платье?</summary>
+            <p>Да. Если вашего платья нет в каталоге — загрузите его фото с витрины салона или с сайта бренда. AI справится.</p>
+        </details>
+        <details class="faq-item">
+            <summary>Что если результат не понравится?</summary>
+            <p>Каждая примерка — это попытка. С пакетом из 20+ примерок можно попробовать разные платья и образы, выбрать лучший.</p>
+        </details>
+    </section>
+
+    <section class="final-cta">
+        <h2>Найдите своё платье</h2>
+        <p>Без салонов. Без поездок. За пять минут — десять образов.</p>
+        <a href="/signup.html" class="btn-primary" style="display:inline-block;">Начать примерку</a>
+    </section>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
+
+    <script>
+        (async function () {
+            try {
+                const exRes = await fetch('/api/examples.json');
+                const examples = await exRes.json();
+                const grid = document.getElementById('examples-grid');
+                grid.innerHTML = examples.map(ex => `
+                    <div class="example-card">
+                        <div class="example-images">
+                            <img src="${ex.before}" alt="До">
+                            <img src="${ex.after}" alt="После">
+                            <span class="example-label before">До</span>
+                            <span class="example-label after">После</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+            try {
+                const cRes = await fetch('/api/catalog.json');
+                const cat = await cRes.json();
+                const cgrid = document.getElementById('catalog-preview-grid');
+                cgrid.innerHTML = cat.slice(0, 6).map(d =>
+                    `<img src="${d.image_url}" alt="${d.name}">`
+                ).join('');
+            } catch (e) { console.error(e); }
+        })();
+    </script>
+</body>
+</html>

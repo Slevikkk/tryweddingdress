@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вариант C — Конверсия · Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        /* ===== Variant C: Sales / Conversion-Focused ===== */
+        .variant-tag {
+            position: fixed; top: 12px; right: 12px; z-index: 999;
+            background: #8b3a4f; color: #fff; padding: 6px 14px;
+            border-radius: 16px; font-size: 13px; font-weight: 600;
+        }
+        .hero-sales {
+            text-align: center; padding: 80px 24px 40px; max-width: 900px; margin: 0 auto;
+        }
+        .hero-sales h1 {
+            font-family: 'Playfair Display', serif; font-size: 3.4rem; line-height: 1.1;
+            margin: 0 0 18px;
+        }
+        .hero-sales .hero-sub {
+            font-size: 1.2rem; color: var(--text-light); max-width: 700px;
+            margin: 0 auto 28px; line-height: 1.6;
+        }
+        .hero-sales .cta-row {
+            display: inline-flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+        }
+        .hero-sales .cta-secondary {
+            color: var(--accent-dark); font-weight: 600; padding: 14px 28px;
+            border-radius: 8px; text-decoration: none;
+        }
+        .hero-sales .cta-secondary:hover { background: rgba(197,168,128,0.08); }
+        .why-us {
+            max-width: 1200px; margin: 60px auto; padding: 0 24px;
+        }
+        .why-us h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            text-align: center; margin: 0 0 36px;
+        }
+        .why-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .why-card {
+            background: #fff; padding: 32px 24px; border-radius: 16px;
+            box-shadow: 0 6px 24px -12px rgba(0,0,0,0.08);
+            border: 1px solid #f0e9e0; text-align: center;
+        }
+        .why-card .icon {
+            width: 56px; height: 56px; margin: 0 auto 16px;
+            background: linear-gradient(135deg, #f7eee2 0%, #e8d4b8 100%);
+            border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+        }
+        .why-card h3 {
+            font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 10px;
+        }
+        .why-card p { color: var(--text-light); line-height: 1.6; }
+        .pricing-inline {
+            background: #faf6f1; padding: 80px 24px; margin: 60px 0;
+        }
+        .pricing-inline-inner {
+            max-width: 1100px; margin: 0 auto;
+        }
+        .pricing-inline h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            text-align: center; margin: 0 0 12px;
+        }
+        .pricing-inline .section-subtitle {
+            text-align: center; color: var(--text-light); margin-bottom: 36px;
+        }
+        .pricing-cards-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+        }
+        .pcard {
+            background: #fff; border-radius: 16px; padding: 32px 28px;
+            border: 1px solid #ece4d9; position: relative; text-align: center;
+            box-shadow: 0 4px 16px -8px rgba(0,0,0,0.06);
+        }
+        .pcard.featured {
+            border: 2px solid var(--accent); transform: translateY(-8px);
+            box-shadow: 0 12px 32px -8px rgba(197,168,128,0.4);
+        }
+        .pcard .pname {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 6px;
+        }
+        .pcard .pcount {
+            color: var(--text-light); font-size: 0.95rem; margin-bottom: 18px;
+        }
+        .pcard .pprice {
+            font-family: 'Playfair Display', serif; font-size: 2.4rem;
+            color: var(--accent-dark); margin: 8px 0;
+        }
+        .pcard .pper {
+            font-size: 0.85rem; color: var(--text-light); margin-bottom: 20px;
+        }
+        .pcard .pbadge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #fff; padding: 4px 14px;
+            border-radius: 12px; font-size: 0.78rem; font-weight: 600;
+        }
+        .faq-mini {
+            max-width: 800px; margin: 80px auto; padding: 0 24px;
+        }
+        .faq-mini h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.2rem;
+            text-align: center; margin: 0 0 32px;
+        }
+        .faq-mini details {
+            border-bottom: 1px solid #ece4d9; padding: 20px 0;
+        }
+        .faq-mini summary {
+            cursor: pointer; font-weight: 600; font-size: 1.05rem;
+            list-style: none; position: relative; padding-right: 32px;
+        }
+        .faq-mini summary::-webkit-details-marker { display: none; }
+        .faq-mini summary::after {
+            content: '+'; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            font-size: 1.6rem; color: var(--accent); font-weight: 300;
+        }
+        .faq-mini details[open] summary::after { content: '−'; }
+        .faq-mini p { margin: 12px 0 0; color: var(--text-light); line-height: 1.6; }
+        .final-cta {
+            background: linear-gradient(135deg, #8b3a4f 0%, #6b2839 100%);
+            padding: 80px 24px; text-align: center; color: #fff;
+        }
+        .final-cta h2 {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem; margin: 0 0 16px;
+        }
+        .final-cta p { font-size: 1.15rem; opacity: 0.9; margin-bottom: 28px; }
+        .final-cta .btn-primary { background: #fff; color: #8b3a4f; }
+        @media (max-width: 768px) {
+            .hero-sales h1 { font-size: 2.4rem; }
+            .why-grid { grid-template-columns: 1fr; }
+            .pricing-cards-row { grid-template-columns: 1fr; }
+            .pcard.featured { transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <span class="variant-tag">Вариант C · Конверсия</span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <a href="/" class="nav-ghost">Главная</a>
+                <a href="/#tryon" class="nav-ghost">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost">Тарифы</a>
+                <a href="/login.html" class="nav-ghost">Вход</a>
+                <a href="/signup.html" class="nav-cta">Регистрация</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-sales">
+        <h1>Перестаньте гадать — увидьте</h1>
+        <p class="hero-sub">Каждое свадебное платье из салона выглядит на манекене иначе, чем на вас. Загрузите фото — и узнайте, что вам идёт, до того как поедете на примерку.</p>
+        <div class="cta-row">
+            <a href="/signup.html" class="btn-primary">Попробовать за 1490 ₽</a>
+            <a href="#how" class="cta-secondary">Как это работает →</a>
+        </div>
+    </section>
+
+    <section class="why-us">
+        <h2>Почему это работает</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="icon">🎯</div>
+                <h3>Точный перенос</h3>
+                <p>Не «нарисованное» платье, а реальное — с того же кружева, того же кроя, того же оттенка ивори. AI переносит конкретное платье с фото.</p>
+            </div>
+            <div class="why-card">
+                <div class="icon">⚡</div>
+                <h3>Минута, а не выходной</h3>
+                <p>Один загрузил, выбрал, получил. Без записи в салон, без часов в трафике, без давления консультантов.</p>
+            </div>
+            <div class="why-card">
+                <div class="icon">🔒</div>
+                <h3>Конфиденциально</h3>
+                <p>Фото обрабатываются на защищённых серверах и удаляются через 30 дней. Никто кроме вас не видит ваши примерки.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="examples-section" style="background: #fff;">
+        <h2>До и после</h2>
+        <p class="section-subtitle">Реальные результаты — без фильтров и ретуши</p>
+        <div id="examples-grid" class="examples-grid"></div>
+    </section>
+
+    <section class="how-it-works" id="how">
+        <h2>Как это работает</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Загрузите фото</h3>
+                <p>В полный рост, в простой одежде, на простом фоне</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Выберите платье</h3>
+                <p>Из каталога или загрузите своё</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Готово</h3>
+                <p>Реалистичное фото за 60 секунд</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-inline">
+        <div class="pricing-inline-inner">
+            <h2>Сколько это стоит</h2>
+            <p class="section-subtitle">Один раз купили — кредиты не сгорают. Используйте, когда нужно.</p>
+            <div class="pricing-cards-row">
+                <div class="pcard">
+                    <div class="pname">Старт</div>
+                    <div class="pcount">5 примерок</div>
+                    <div class="pprice">1490 ₽</div>
+                    <div class="pper">298 ₽ за примерку</div>
+                    <a href="/signup.html" class="btn-secondary" style="display:inline-block;">Купить</a>
+                </div>
+                <div class="pcard featured">
+                    <div class="pbadge">Выбор невест</div>
+                    <div class="pname">Невеста</div>
+                    <div class="pcount">20 примерок</div>
+                    <div class="pprice">2290 ₽</div>
+                    <div class="pper">115 ₽ за примерку</div>
+                    <a href="/signup.html" class="btn-primary" style="display:inline-block;">Купить</a>
+                </div>
+                <div class="pcard">
+                    <div class="pname">Полный</div>
+                    <div class="pcount">60 примерок</div>
+                    <div class="pprice">4690 ₽</div>
+                    <div class="pper">78 ₽ за примерку</div>
+                    <a href="/signup.html" class="btn-secondary" style="display:inline-block;">Купить</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-mini">
+        <h2>Что чаще всего спрашивают</h2>
+        <details>
+            <summary>Это безопасно? Куда денутся мои фото?</summary>
+            <p>Фото на защищённых серверах и удаляются через 30 дней. Не передаём третьим лицам.</p>
+        </details>
+        <details>
+            <summary>Платье будет выглядеть точно как реальное?</summary>
+            <p>Да — мы переносим конкретное платье с его реального фото, а не генерируем похожее. Видны кружево, рукав, силуэт.</p>
+        </details>
+        <details>
+            <summary>Что если результат не понравится?</summary>
+            <p>Каждая примерка — попытка. С пакетом в 20 примерок можно попробовать разные образы и выбрать лучший.</p>
+        </details>
+    </section>
+
+    <section class="final-cta">
+        <h2>Не теряйте выходной — выбирайте дома</h2>
+        <p>5 примерок за 1490 ₽. Кредиты не сгорают.</p>
+        <a href="/signup.html" class="btn-primary" style="display:inline-block;">Начать сейчас</a>
+    </section>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
+
+    <script>
+        (async function () {
+            try {
+                const exRes = await fetch('/api/examples.json');
+                const examples = await exRes.json();
+                const grid = document.getElementById('examples-grid');
+                grid.innerHTML = examples.map(ex => `
+                    <div class="example-card">
+                        <div class="example-images">
+                            <img src="${ex.before}" alt="До">
+                            <img src="${ex.after}" alt="После">
+                            <span class="example-label before">До</span>
+                            <span class="example-label after">После</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        })();
+    </script>
+</body>
+</html>

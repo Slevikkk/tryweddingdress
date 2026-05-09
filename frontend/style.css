@@ -43,13 +43,34 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     font-size: 1.4rem; font-weight: 700;
     color: var(--text); text-decoration: none;
 }
-.nav-links { display: flex; gap: 24px; }
+.nav-links {
+    display: flex; gap: 12px;
+    align-items: center;
+}
 .nav-links a {
     color: var(--text-light); text-decoration: none;
     font-size: 0.95rem; font-weight: 500;
-    transition: color 0.2s;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+    line-height: 1;
+    display: inline-flex; align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
 }
 .nav-links a:hover { color: var(--accent-dark); }
+.nav-links a.nav-ghost { color: var(--text-light); }
+.nav-links a.nav-ghost:hover {
+    color: var(--accent-dark);
+    background: rgba(197,168,128,0.08);
+}
+.nav-links a.nav-cta {
+    background: var(--accent); color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.nav-links a.nav-cta:hover {
+    background: var(--accent-dark); color: #fff;
+}
 
 /* HERO */
 .hero {

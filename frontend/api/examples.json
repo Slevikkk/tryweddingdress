@@ -1,0 +1,14 @@
+[
+  {
+    "id": "example_01",
+    "before": "/examples/example_01/before.png",
+    "after": "/examples/example_01/after.png",
+    "dress": "/examples/example_01/dress.jpg"
+  },
+  {
+    "id": "example_02",
+    "before": "/examples/example_02/before.png",
+    "after": "/examples/example_02/after.png",
+    "dress": "/examples/example_02/dress.jpg"
+  }
+]
