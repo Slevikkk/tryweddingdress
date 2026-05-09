@@ -60,23 +60,23 @@ CREDIT_PACKS: dict[str, CreditPack] = {
     "starter": CreditPack(
         id="starter",
         name="Старт",
-        credits=10,
+        credits=5,
         amount_rub=1490,
-        description="10 примерок свадебных платьев на Try Wedding Dress",
+        description="5 примерок свадебных платьев на Try Wedding Dress",
     ),
     "bride": CreditPack(
         id="bride",
         name="Невеста",
-        credits=30,
+        credits=20,
         amount_rub=2290,
-        description="30 примерок свадебных платьев на Try Wedding Dress",
+        description="20 примерок свадебных платьев на Try Wedding Dress",
     ),
     "full": CreditPack(
         id="full",
         name="Полный",
-        credits=80,
+        credits=60,
         amount_rub=4690,
-        description="80 примерок свадебных платьев на Try Wedding Dress",
+        description="60 примерок свадебных платьев на Try Wedding Dress",
     ),
 }
 
