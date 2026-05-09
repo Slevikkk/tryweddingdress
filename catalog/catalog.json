@@ -10,7 +10,8 @@
     "price": 1179.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/beaded-lace-wedding-dress-with-pleated-skirt-cwg780"
+    "source_url": "https://checkout.davidsbridal.com/products/beaded-lace-wedding-dress-with-pleated-skirt-cwg780",
+    "name_ru": "Кружевное А-силуэт с плиссированной юбкой"
   },
   {
     "id": "db_V01967902",
@@ -23,7 +24,8 @@
     "price": 979.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/beaded-scroll-and-lace-mermaid-wedding-dress-cwg878"
+    "source_url": "https://checkout.davidsbridal.com/products/beaded-scroll-and-lace-mermaid-wedding-dress-cwg878",
+    "name_ru": "«Русалка» с расшивкой и кружевом"
   },
   {
     "id": "db_V01973467",
@@ -36,7 +38,8 @@
     "price": 599.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/allover-floral-beaded-godet-sheath-wedding-dress-wgin5113"
+    "source_url": "https://checkout.davidsbridal.com/products/allover-floral-beaded-godet-sheath-wedding-dress-wgin5113",
+    "name_ru": "Прямое с цветочной расшивкой"
   },
   {
     "id": "db_V02052977",
@@ -49,7 +52,8 @@
     "price": 249.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/plunging-halter-satin-a-line-wedding-dress-wg4096"
+    "source_url": "https://checkout.davidsbridal.com/products/plunging-halter-satin-a-line-wedding-dress-wg4096",
+    "name_ru": "А-силуэт халтер из атласа"
   },
   {
     "id": "db_V02075866",
@@ -62,7 +66,8 @@
     "price": 899.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-appliqued-a-line-wedding-dress-wg4113"
+    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-appliqued-a-line-wedding-dress-wg4113",
+    "name_ru": "А-силуэт с открытыми плечами и аппликацией"
   },
   {
     "id": "db_V02083036",
@@ -75,7 +80,8 @@
     "price": 399.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-sculpting-satin-wedding-dress-sdwg1203"
+    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-sculpting-satin-wedding-dress-sdwg1203",
+    "name_ru": "Атласное с открытыми плечами"
   },
   {
     "id": "db_V02124064",
@@ -88,7 +94,8 @@
     "price": 199.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/sculpting-satin-square-neck-tank-wedding-dress-sdwg1216"
+    "source_url": "https://checkout.davidsbridal.com/products/sculpting-satin-square-neck-tank-wedding-dress-sdwg1216",
+    "name_ru": "Атласное с квадратным вырезом"
   },
   {
     "id": "db_V01761568",
@@ -101,7 +108,8 @@
     "price": 458.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-beverly-long-beaded-low-back-v-neck-gown-29833"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-beverly-long-beaded-low-back-v-neck-gown-29833",
+    "name_ru": "Lara Beverly с расшивкой и V-вырезом"
   },
   {
     "id": "db_V01985092",
@@ -114,7 +122,8 @@
     "price": 178.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/stars-a-line-wedding-dress-79183601"
+    "source_url": "https://checkout.davidsbridal.com/products/stars-a-line-wedding-dress-79183601",
+    "name_ru": "А-силуэт «Звёзды»"
   },
   {
     "id": "db_V01970836",
@@ -127,7 +136,8 @@
     "price": 498.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-gigi-romantic-long-sleeve-wedding-dress-51079"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-gigi-romantic-long-sleeve-wedding-dress-51079",
+    "name_ru": "Lara Gigi с длинным рукавом"
   },
   {
     "id": "db_V01912282",
@@ -140,7 +150,8 @@
     "price": 298.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-eliza-beaded-a-line-bell-sleeve-mini-dress-33414"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-eliza-beaded-a-line-bell-sleeve-mini-dress-33414",
+    "name_ru": "Lara Eliza мини с расклешённым рукавом"
   },
   {
     "id": "db_V01849979",
@@ -153,7 +164,8 @@
     "price": 298.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-demi-beaded-short-fringe-hem-wedding-dress-51040"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-demi-beaded-short-fringe-hem-wedding-dress-51040",
+    "name_ru": "Lara Demi с расшивкой и бахромой"
   },
   {
     "id": "db_V01970874",
@@ -166,7 +178,8 @@
     "price": 558.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-gwen-beaded-short-sleeve-wedding-dress-51071"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-gwen-beaded-short-sleeve-wedding-dress-51071",
+    "name_ru": "Lara Gwen с коротким рукавом"
   },
   {
     "id": "db_V01746085",
@@ -179,7 +192,8 @@
     "price": 999.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lace-illusion-cap-sleeve-ball-gown-wedding-dress-cwg833"
+    "source_url": "https://checkout.davidsbridal.com/products/lace-illusion-cap-sleeve-ball-gown-wedding-dress-cwg833",
+    "name_ru": "Бальное кружевное с короткими рукавами"
   },
   {
     "id": "db_V01695167",
@@ -192,7 +206,8 @@
     "price": 178.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/stars-a-line-plus-size-wedding-dress-19183601"
+    "source_url": "https://checkout.davidsbridal.com/products/stars-a-line-plus-size-wedding-dress-19183601",
+    "name_ru": "А-силуэт «Звёзды» Plus Size"
   },
   {
     "id": "db_V01762889",
@@ -205,7 +220,8 @@
     "price": 598.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-blair-long-sleeve-beaded-surplice-sheath-gown-51007"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-blair-long-sleeve-beaded-surplice-sheath-gown-51007",
+    "name_ru": "Lara Blair прямое с длинным рукавом"
   },
   {
     "id": "db_V01912275",
@@ -218,7 +234,8 @@
     "price": 298.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-erin-geometric-beaded-mini-dress-51047"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-erin-geometric-beaded-mini-dress-51047",
+    "name_ru": "Lara Erin мини с геометрической расшивкой"
   },
   {
     "id": "db_V01687806",
@@ -231,7 +248,8 @@
     "price": 199.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-long-sleeve-lace-draped-gown-184213db"
+    "source_url": "https://checkout.davidsbridal.com/products/off-the-shoulder-long-sleeve-lace-draped-gown-184213db",
+    "name_ru": "Кружевное с открытыми плечами и длинным рукавом"
   },
   {
     "id": "db_V01762553",
@@ -244,7 +262,8 @@
     "price": 598.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-brooke-beaded-spaghetti-strap-sheath-gown-51005"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-brooke-beaded-spaghetti-strap-sheath-gown-51005",
+    "name_ru": "Lara Brooke прямое на тонких бретелях"
   },
   {
     "id": "db_V01947162",
@@ -257,7 +276,8 @@
     "price": 999.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/plunging-open-back-tulle-wedding-dress-slcwg901"
+    "source_url": "https://checkout.davidsbridal.com/products/plunging-open-back-tulle-wedding-dress-slcwg901",
+    "name_ru": "Из фатина с открытой спиной"
   },
   {
     "id": "db_V02229110",
@@ -270,7 +290,8 @@
     "price": 499.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/matte-satin-peplum-bodice-faux-two-piece-dress-sdwg1262"
+    "source_url": "https://checkout.davidsbridal.com/products/matte-satin-peplum-bodice-faux-two-piece-dress-sdwg1262",
+    "name_ru": "Атласное с баской"
   },
   {
     "id": "db_V02214746",
@@ -283,7 +304,8 @@
     "price": 7995.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/embroidered-lace-wedding-dress-with-cape-b15811"
+    "source_url": "https://checkout.davidsbridal.com/products/embroidered-lace-wedding-dress-with-cape-b15811",
+    "name_ru": "Кружевное с вышивкой и накидкой"
   },
   {
     "id": "db_V02056310",
@@ -296,7 +318,8 @@
     "price": 599.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/multi-lace-tank-v-neck-mermaid-wedding-dress-cwg963"
+    "source_url": "https://checkout.davidsbridal.com/products/multi-lace-tank-v-neck-mermaid-wedding-dress-cwg963",
+    "name_ru": "«Русалка» кружевное с V-вырезом"
   },
   {
     "id": "db_V01626421",
@@ -309,7 +332,8 @@
     "price": 248.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/sweet-serenity-plus-size-wedding-gown-13170916"
+    "source_url": "https://checkout.davidsbridal.com/products/sweet-serenity-plus-size-wedding-gown-13170916",
+    "name_ru": "Sweet Serenity Plus Size"
   },
   {
     "id": "db_V01588548",
@@ -322,7 +346,8 @@
     "price": 288.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/amour-lace-plus-size-wedding-gown-14130905"
+    "source_url": "https://checkout.davidsbridal.com/products/amour-lace-plus-size-wedding-gown-14130905",
+    "name_ru": "Amour кружевное Plus Size"
   },
   {
     "id": "db_V02183718",
@@ -335,7 +360,8 @@
     "price": 249.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/illusion-corset-bodice-tulle-ball-gown-eds711009"
+    "source_url": "https://checkout.davidsbridal.com/products/illusion-corset-bodice-tulle-ball-gown-eds711009",
+    "name_ru": "Бальное из фатина с корсетом"
   },
   {
     "id": "db_V02180067",
@@ -348,7 +374,8 @@
     "price": 199.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/strapless-stretch-crepe-sheath-wedding-dress-sdwg1247"
+    "source_url": "https://checkout.davidsbridal.com/products/strapless-stretch-crepe-sheath-wedding-dress-sdwg1247",
+    "name_ru": "Прямое из крепа без бретелей"
   },
   {
     "id": "db_V02074932",
@@ -361,7 +388,8 @@
     "price": 498.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lara-hayden-beaded-flutter-sleeve-short-dress-51121"
+    "source_url": "https://checkout.davidsbridal.com/products/lara-hayden-beaded-flutter-sleeve-short-dress-51121",
+    "name_ru": "Lara Hayden короткое с воздушным рукавом"
   },
   {
     "id": "db_V02023355",
@@ -374,7 +402,8 @@
     "price": 324.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lace-illusion-plus-size-wedding-gown-14130904"
+    "source_url": "https://checkout.davidsbridal.com/products/lace-illusion-plus-size-wedding-gown-14130904",
+    "name_ru": "Кружевное Plus Size"
   },
   {
     "id": "db_V01987615",
@@ -387,7 +416,8 @@
     "price": 164.94,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/allover-lace-tank-wedding-gown-with-v-back-detail-wg4061"
+    "source_url": "https://checkout.davidsbridal.com/products/allover-lace-tank-wedding-gown-with-v-back-detail-wg4061",
+    "name_ru": "Полностью кружевное с V-вырезом сзади"
   },
   {
     "id": "db_V02018616",
@@ -400,7 +430,8 @@
     "price": 519.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lace-applique-halter-a-line-wedding-dress-wg4071"
+    "source_url": "https://checkout.davidsbridal.com/products/lace-applique-halter-a-line-wedding-dress-wg4071",
+    "name_ru": "А-силуэт халтер с кружевной аппликацией"
   },
   {
     "id": "db_V02047098",
@@ -413,7 +444,8 @@
     "price": 399.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/removable-train-mermaid-wedding-dress-cwg932"
+    "source_url": "https://checkout.davidsbridal.com/products/removable-train-mermaid-wedding-dress-cwg932",
+    "name_ru": "«Русалка» со съёмным шлейфом"
   },
   {
     "id": "db_V02052889",
@@ -426,7 +458,8 @@
     "price": 629.3,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/off-shoulder-satin-mermaid-wedding-dress-wg4093"
+    "source_url": "https://checkout.davidsbridal.com/products/off-shoulder-satin-mermaid-wedding-dress-wg4093",
+    "name_ru": "«Русалка» атласное с открытыми плечами"
   },
   {
     "id": "db_V02052363",
@@ -439,7 +472,8 @@
     "price": 649.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/long-billow-sleeve-chiffon-a-line-wedding-dress-sdwg1126"
+    "source_url": "https://checkout.davidsbridal.com/products/long-billow-sleeve-chiffon-a-line-wedding-dress-sdwg1126",
+    "name_ru": "Из шифона с пышным длинным рукавом"
   },
   {
     "id": "db_V02056175",
@@ -452,7 +486,8 @@
     "price": 3499.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/lace-applique-tank-ball-gown-wedding-dress-cwg958"
+    "source_url": "https://checkout.davidsbridal.com/products/lace-applique-tank-ball-gown-wedding-dress-cwg958",
+    "name_ru": "Бальное с кружевной аппликацией"
   },
   {
     "id": "db_V02063440",
@@ -465,7 +500,8 @@
     "price": 299.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/high-neck-satin-a-line-wedding-dress-wg4101"
+    "source_url": "https://checkout.davidsbridal.com/products/high-neck-satin-a-line-wedding-dress-wg4101",
+    "name_ru": "Атласное с высоким воротом"
   },
   {
     "id": "db_V02053156",
@@ -478,7 +514,8 @@
     "price": 1499.0,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/illusion-v-neck-long-sleeve-lace-wedding-gown-slcwg924"
+    "source_url": "https://checkout.davidsbridal.com/products/illusion-v-neck-long-sleeve-lace-wedding-gown-slcwg924",
+    "name_ru": "Кружевное с V-вырезом и длинным рукавом"
   },
   {
     "id": "db_V02064675",
@@ -491,7 +528,8 @@
     "price": 69.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/allover-lace-strapless-sheath-wedding-dress-sdwg1119"
+    "source_url": "https://checkout.davidsbridal.com/products/allover-lace-strapless-sheath-wedding-dress-sdwg1119",
+    "name_ru": "Прямое кружевное без бретелей"
   },
   {
     "id": "db_V02065031",
@@ -504,7 +542,8 @@
     "price": 199.95,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/short-jacquard-a-line-dress-with-removable-straps-sdwg1177"
+    "source_url": "https://checkout.davidsbridal.com/products/short-jacquard-a-line-dress-with-removable-straps-sdwg1177",
+    "name_ru": "Короткое из жаккарда со съёмными бретелями"
   },
   {
     "id": "db_V02065158",
@@ -517,7 +556,8 @@
     "price": 1049.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/illusion-halter-beaded-lace-a-line-wedding-dress-swg948"
+    "source_url": "https://checkout.davidsbridal.com/products/illusion-halter-beaded-lace-a-line-wedding-dress-swg948",
+    "name_ru": "А-силуэт халтер с кружевной расшивкой"
   },
   {
     "id": "db_V02066010",
@@ -530,6 +570,7 @@
     "price": 149.99,
     "currency": "USD",
     "source": "davidsbridal.com",
-    "source_url": "https://checkout.davidsbridal.com/products/sparkle-lace-corset-bodice-a-line-wedding-dress-sdwg1176"
+    "source_url": "https://checkout.davidsbridal.com/products/sparkle-lace-corset-bodice-a-line-wedding-dress-sdwg1176",
+    "name_ru": "А-силуэт с корсетом и блестящим кружевом"
   }
 ]

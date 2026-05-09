@@ -34,11 +34,144 @@
             border-radius: 24px; overflow: hidden; aspect-ratio: 4/5;
             background: #f0e9e0; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.18);
         }
-        .hero-magazine .hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-magazine .hero-img img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            animation: hero-img-zoom 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+            transform-origin: center;
+        }
+        @keyframes hero-img-zoom {
+            from { transform: scale(1.08); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        /* Subtle staggered fade-in on first paint. We use animation-fill-mode:
+           backwards so elements stay invisible only DURING the animation+delay;
+           if animations are blocked (older browsers, headless screenshotters)
+           the base styles keep everything visible. */
+        @media (prefers-reduced-motion: no-preference) {
+            .hero-magazine h1,
+            .hero-magazine .hero-sub,
+            .hero-magazine > div > .btn-primary,
+            .hero-magazine .hero-trust {
+                animation: hero-text-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+            }
+            .hero-magazine h1            { animation-delay: 0.05s; }
+            .hero-magazine .hero-sub     { animation-delay: 0.18s; }
+            .hero-magazine > div > .btn-primary { animation-delay: 0.30s; }
+            .hero-magazine .hero-trust   { animation-delay: 0.42s; }
+        }
+        @keyframes hero-text-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-magazine h1,
+            .hero-magazine .hero-sub,
+            .hero-magazine > div > .btn-primary,
+            .hero-magazine .hero-trust,
+            .hero-magazine .hero-img img {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+        }
         .quote-strip {
             background: #faf6f1; padding: 40px 24px; text-align: center;
             font-family: 'Playfair Display', serif; font-size: 1.6rem; font-style: italic;
             color: #5a4633; max-width: 900px; margin: 40px auto; border-radius: 16px;
+        }
+        .brand-strip {
+            max-width: 1100px;
+            margin: 28px auto 60px;
+            padding: 0 24px;
+            text-align: center;
+        }
+        .brand-strip-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-light);
+            margin: 0 0 18px;
+        }
+        .brand-strip-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 28px 44px;
+        }
+        .brand-strip-list li {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.18rem;
+            color: #6e5a3f;
+            letter-spacing: 0.04em;
+            opacity: 0.78;
+            transition: opacity 0.18s ease, color 0.18s ease;
+        }
+        .brand-strip-list li:hover {
+            opacity: 1;
+            color: var(--accent-dark);
+        }
+        .why-grid {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 24px;
+        }
+        .why-grid h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            text-align: center;
+            margin: 0 0 36px;
+        }
+        .why-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .why-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px 24px;
+            text-align: left;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .why-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.14);
+        }
+        .why-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #f5ece1;
+            color: var(--accent-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .why-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.18rem;
+            font-weight: 600;
+            margin: 0 0 8px;
+            color: var(--text);
+        }
+        .why-card p {
+            font-size: 0.92rem;
+            line-height: 1.55;
+            color: var(--text-light);
+            margin: 0;
+        }
+        @media (max-width: 1024px) {
+            .why-cards { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .why-cards { grid-template-columns: 1fr; }
+            .brand-strip-list { gap: 14px 24px; }
+            .brand-strip-list li { font-size: 1.05rem; }
         }
         .catalog-preview { max-width: 1200px; margin: 80px auto; padding: 0 24px; }
         .catalog-preview h2 {
@@ -76,9 +209,32 @@
         .final-cta h2 { font-family: 'Playfair Display', serif; font-size: 2.6rem; margin: 0 0 16px; }
         .final-cta p { font-size: 1.15rem; color: var(--text-light); margin-bottom: 28px; }
         @media (max-width: 768px) {
-            .hero-magazine { grid-template-columns: 1fr; gap: 32px; padding: 40px 18px; }
-            .hero-magazine h1 { font-size: 2.4rem; }
-            .catalog-preview-grid { grid-template-columns: repeat(3, 1fr); }
+            .hero-magazine { grid-template-columns: 1fr; gap: 28px; padding: 32px 18px; }
+            .hero-magazine h1 { font-size: 2.2rem; }
+            .hero-magazine .hero-sub { font-size: 1.02rem; margin-bottom: 22px; }
+            .hero-magazine .hero-trust {
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 22px;
+                font-size: 0.86rem;
+            }
+            .hero-magazine .hero-trust .hero-trust-sep { display: none; }
+            .quote-strip {
+                padding: 28px 20px;
+                font-size: 1.15rem;
+                margin: 28px 16px;
+            }
+            .catalog-preview-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .catalog-preview { margin: 56px auto; }
+            .catalog-preview h2 { font-size: 1.9rem; }
+            .why-grid { margin: 56px auto; }
+            .why-grid h2 { font-size: 1.9rem; margin: 0 0 28px; }
+            .final-cta { padding: 56px 20px; }
+            .final-cta h2 { font-size: 2rem; }
+            .faq-section { margin: 56px auto; }
+        }
+        @media (max-width: 420px) {
+            .hero-magazine h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -106,8 +262,11 @@
                 <p class="hero-sub">Загрузите одну фотографию — увидьте, как на вас сидит любое свадебное платье. AI воспроизводит крой, ткань и кружево по реальной фотографии платья. За минуту, без поездок в салон.</p>
                 <a href="/pricing.html" class="btn-primary" style="display:inline-block;">Выбрать тариф</a>
                 <div class="hero-trust">
-                    <span>★ 4.8 средняя оценка</span>
-                    <span>· Оплата СБП и картой</span>
+                    <span>Платья David&rsquo;s Bridal &amp; Oleg Cassini</span>
+                    <span class="hero-trust-sep" aria-hidden="true">·</span>
+                    <span>Оплата СБП и картой</span>
+                    <span class="hero-trust-sep" aria-hidden="true">·</span>
+                    <span>Без подписки</span>
                 </div>
             </div>
             <div class="hero-img">
@@ -119,11 +278,68 @@
             «Свадебный салон у вас в телефоне. Только без чужих глаз и неловкости в раздевалке.»
         </div>
 
+        <section class="brand-strip" aria-label="Бренды в каталоге">
+            <p class="brand-strip-label">Платья из коллекций</p>
+            <ul class="brand-strip-list">
+                <li>Oleg Cassini</li>
+                <li>DB Studio</li>
+                <li>Lara</li>
+                <li>Marchesa Bridal</li>
+                <li>Galina Signature</li>
+                <li>Kiyonna</li>
+            </ul>
+        </section>
+
         <section id="examples" class="examples-section" style="background:#fff;">
             <h2>До и после</h2>
-            <p class="section-subtitle">Реальные результаты — без фильтров и ретуши</p>
+            <p class="section-subtitle">Реальные результаты — без фильтров и ретуши. Сдвиньте ползунок — увидите оригинал и образ в платье.</p>
             <div id="examples-grid" class="examples-grid">
                 <!-- filled by JS -->
+            </div>
+        </section>
+
+        <section class="why-grid" aria-label="Почему невесты выбирают нас">
+            <h2>Почему невесты примеряют у нас</h2>
+            <div class="why-cards">
+                <div class="why-card">
+                    <div class="why-card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="16" cy="16" r="13"/>
+                            <path d="M16 9 v7 l5 3"/>
+                        </svg>
+                    </div>
+                    <h3>Минута вместо дня</h3>
+                    <p>Один результат — за 30–60 секунд. Без поездок в салон и без записи на примерку.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4 l4 5 6 1 -4 5 1 6 -7 -3 -7 3 1 -6 -4 -5 6 -1 z"/>
+                        </svg>
+                    </div>
+                    <h3>Реальные платья</h3>
+                    <p>Каталог из коллекций David&rsquo;s Bridal, Oleg Cassini, Marchesa и других — кружево, ткань, рукав видно как на фото.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="11" width="20" height="14" rx="2"/>
+                            <path d="M11 11 V8 a5 5 0 0 1 10 0 v3"/>
+                        </svg>
+                    </div>
+                    <h3>Только ваши фото</h3>
+                    <p>Снимки удаляются через 30 дней. Мы не передаём их третьим лицам и не используем для обучения моделей.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="8" width="24" height="16" rx="2"/>
+                            <path d="M4 13 H28"/>
+                        </svg>
+                    </div>
+                    <h3>Без подписки</h3>
+                    <p>Платите только за пакет кредитов. Кредиты не сгорают и хранятся в вашем аккаунте. Оплата через СБП и картой.</p>
+                </div>
             </div>
         </section>
 
@@ -191,6 +407,17 @@
         <div class="tryon-container">
             <h2>Виртуальная примерка</h2>
 
+            <div class="tryon-signin-banner" data-auth="signed-out">
+                <div class="tryon-signin-banner-text">
+                    <strong>Чтобы примерить — войдите или зарегистрируйтесь.</strong>
+                    Бесплатная регистрация занимает 30 секунд, без подписок.
+                </div>
+                <div class="tryon-signin-banner-actions">
+                    <a href="/signup.html" class="btn-primary">Регистрация</a>
+                    <a href="#" onclick="goToLoginWithReturn();return false;" class="btn-secondary">Войти</a>
+                </div>
+            </div>
+
             <div class="tryon-grid">
                 <!-- Step 1: Upload Photo -->
                 <div class="tryon-step">
@@ -249,7 +476,15 @@
                     <h3>3. Результат</h3>
                     <div id="result-area" class="result-area">
                         <div id="result-placeholder" class="result-placeholder">
-                            <p>Здесь появится ваш результат</p>
+                            <svg class="result-placeholder-icon" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M60 18 c-7 0 -13 6 -13 13 0 6 4 11 9 12 l-22 18 c-3 2 -3 6 -1 9 l8 11 -7 70 h52 l-7 -70 8 -11 c2 -3 2 -7 -1 -9 l-22 -18 c5 -1 9 -6 9 -12 0 -7 -6 -13 -13 -13 z"
+                                      fill="#f5ece1" stroke="#d8c8b1" stroke-width="1.4" stroke-linejoin="round"/>
+                                <path d="M48 56 q12 -5 24 0" stroke="#d8c8b1" stroke-width="1" fill="none"/>
+                                <path d="M44 78 q16 -7 32 0" stroke="#e3d6bf" stroke-width="0.8" fill="none"/>
+                                <circle cx="60" cy="31" r="2" fill="#d8c8b1"/>
+                            </svg>
+                            <p class="result-placeholder-title">Здесь появится ваш образ</p>
+                            <p class="result-placeholder-sub">Загрузите фото и выберите платье — нажмите «Примерить»</p>
                         </div>
                         <div id="result-loading" class="result-loading" style="display:none;">
                             <div class="spinner"></div>
@@ -373,6 +608,7 @@
                 </div>
                 <div class="modal-details">
                     <h3 id="modal-name"></h3>
+                    <div id="modal-name-en" class="modal-name-en"></div>
                     <div class="modal-meta">
                         <span class="modal-meta-item"><span class="dress-color" id="modal-color-swatch"></span> <span id="modal-color"></span></span>
                         <span class="modal-meta-item"><span id="modal-style"></span></span>

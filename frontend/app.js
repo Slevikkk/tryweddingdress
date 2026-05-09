@@ -72,19 +72,103 @@ async function loadExamples() {
         const examples = await res.json();
         const grid = document.getElementById('examples-grid');
         if (!grid) return;
-        grid.innerHTML = examples.map(ex => `
+        grid.innerHTML = examples.map((ex, idx) => `
             <div class="example-card">
-                <div class="example-images">
-                    <img src="${ex.before}" alt="До" loading="lazy">
-                    <img src="${ex.after}" alt="После" loading="lazy">
-                    <span class="example-label before">До</span>
-                    <span class="example-label after">После</span>
+                <div class="ba-slider" data-slider-idx="${idx}" data-start="50">
+                    <img class="ba-slider-img ba-slider-after" src="${ex.after}" alt="После" loading="lazy">
+                    <img class="ba-slider-img ba-slider-before" src="${ex.before}" alt="До" loading="lazy">
+                    <div class="ba-slider-handle" tabindex="0" role="slider" aria-label="Сдвиньте, чтобы сравнить До и После" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                        <div class="ba-slider-thumb" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="9 6 3 12 9 18"></polyline>
+                                <polyline points="15 6 21 12 15 18"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ba-slider-label ba-slider-label-before">До</span>
+                    <span class="ba-slider-label ba-slider-label-after">После</span>
                 </div>
             </div>
         `).join('');
+
+        grid.querySelectorAll('.ba-slider').forEach(initBaSlider);
     } catch (e) {
         console.error('Failed to load examples:', e);
     }
+}
+
+// ------------------------------------------------------------------
+// Before/after slider
+// ------------------------------------------------------------------
+function initBaSlider(slider) {
+    const before = slider.querySelector('.ba-slider-before');
+    const handle = slider.querySelector('.ba-slider-handle');
+    if (!before || !handle) return;
+
+    const startPct = parseFloat(slider.dataset.start || '50');
+    setSliderPosition(before, handle, startPct);
+
+    let dragging = false;
+
+    function getPctFromEvent(e) {
+        const rect = slider.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        return Math.max(0, Math.min(100, (x / rect.width) * 100));
+    }
+
+    function onPointerDown(e) {
+        dragging = true;
+        slider.classList.add('ba-slider-dragging');
+        const pct = getPctFromEvent(e);
+        setSliderPosition(before, handle, pct);
+        e.preventDefault();
+    }
+    function onPointerMove(e) {
+        if (!dragging) return;
+        const pct = getPctFromEvent(e);
+        setSliderPosition(before, handle, pct);
+    }
+    function onPointerUp() {
+        if (!dragging) return;
+        dragging = false;
+        slider.classList.remove('ba-slider-dragging');
+    }
+
+    slider.addEventListener('mousedown', onPointerDown);
+    slider.addEventListener('touchstart', onPointerDown, { passive: false });
+    document.addEventListener('mousemove', onPointerMove);
+    document.addEventListener('touchmove', onPointerMove, { passive: true });
+    document.addEventListener('mouseup', onPointerUp);
+    document.addEventListener('touchend', onPointerUp);
+    document.addEventListener('touchcancel', onPointerUp);
+
+    handle.addEventListener('keydown', (e) => {
+        const step = e.shiftKey ? 10 : 4;
+        const current = parseFloat(handle.style.left) || 50;
+        if (e.key === 'ArrowLeft') {
+            setSliderPosition(before, handle, current - step);
+            e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+            setSliderPosition(before, handle, current + step);
+            e.preventDefault();
+        } else if (e.key === 'Home') {
+            setSliderPosition(before, handle, 0);
+            e.preventDefault();
+        } else if (e.key === 'End') {
+            setSliderPosition(before, handle, 100);
+            e.preventDefault();
+        }
+    });
+}
+
+function setSliderPosition(before, handle, pct) {
+    pct = Math.max(0, Math.min(100, pct));
+    // clip-path: inset(top right bottom left) — we hide everything to the
+    // RIGHT of `pct`, i.e. inset right by (100 - pct)%. So as pct grows,
+    // more of the "before" image is revealed from the left.
+    before.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+    handle.style.left = pct + '%';
+    handle.setAttribute('aria-valuenow', String(Math.round(pct)));
 }
 
 async function loadCatalog() {
@@ -104,11 +188,11 @@ function buildFilters() {
 
     const colorContainer = document.getElementById('color-filters');
     colorContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setColorFilter(\'all\', this)">Все</button>' +
-        colors.map(c => `<button class="filter-pill" data-filter="${c}" onclick="setColorFilter('${c}', this)">${c}</button>`).join('');
+        colors.map(c => `<button class="filter-pill" data-filter="${c}" onclick="setColorFilter('${c}', this)">${colorLabel(c)}</button>`).join('');
 
     const styleContainer = document.getElementById('style-filters');
     styleContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setStyleFilter(\'all\', this)">Все</button>' +
-        styles.map(s => `<button class="filter-pill" data-filter="${s}" onclick="setStyleFilter('${s}', this)">${s}</button>`).join('');
+        styles.map(s => `<button class="filter-pill" data-filter="${s}" onclick="setStyleFilter('${s}', this)">${styleLabel(s)}</button>`).join('');
 }
 
 function setColorFilter(color, btn) {
@@ -143,12 +227,13 @@ function renderCatalog() {
             <span class="zoom-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
             </span>
-            <img src="${dress.image_url}" alt="${dress.name}" loading="lazy">
+            <img src="${dress.image_url}" alt="${dressNamePrimary(dress)}" loading="lazy">
             <div class="dress-info">
-                <div class="dress-name">${dress.name}</div>
+                <div class="dress-name">${dressNamePrimary(dress)}</div>
+                ${dressNameSecondary(dress) ? `<div class="dress-name-en">${dressNameSecondary(dress)}</div>` : ''}
                 <div class="dress-meta">
                     <span class="dress-color" style="background:${getColorHex(dress.color)}"></span>
-                    ${dress.color} · ${dress.style}
+                    ${colorLabel(dress.color)} · ${styleLabel(dress.style)}
                 </div>
             </div>
         </div>
@@ -162,11 +247,17 @@ function openDressModal(id) {
     if (!dress) return;
     modalDressId = id;
     document.getElementById('modal-img').src = dress.image_url;
-    document.getElementById('modal-img').alt = dress.name;
-    document.getElementById('modal-name').textContent = dress.name;
-    document.getElementById('modal-color').textContent = dress.color;
+    document.getElementById('modal-img').alt = dressNamePrimary(dress);
+    document.getElementById('modal-name').textContent = dressNamePrimary(dress);
+    const modalNameEn = document.getElementById('modal-name-en');
+    if (modalNameEn) {
+        const en = dressNameSecondary(dress);
+        modalNameEn.textContent = en;
+        modalNameEn.style.display = en ? '' : 'none';
+    }
+    document.getElementById('modal-color').textContent = colorLabel(dress.color);
     document.getElementById('modal-color-swatch').style.background = getColorHex(dress.color);
-    document.getElementById('modal-style').textContent = dress.style;
+    document.getElementById('modal-style').textContent = styleLabel(dress.style);
     document.getElementById('modal-description').textContent = dress.description || '';
 
     // Vendor pill
@@ -249,6 +340,26 @@ function getColorHex(color) {
     return map[color] || '#CCCCCC';
 }
 
+const COLOR_RU = {
+    'White': 'Белый',
+    'Ivory': 'Айвори',
+    'Champagne': 'Шампань',
+    'Blush': 'Блаш',
+    'Pink': 'Розовый',
+    'Coral': 'Коралловый',
+    'Navy Blue': 'Тёмно-синий',
+};
+const STYLE_RU = {
+    'A-Line': 'А-силуэт',
+    'Mermaid': '«Русалка»',
+    'Sheath': 'Прямой',
+    'Ball Gown': 'Бальное',
+};
+function colorLabel(color) { return COLOR_RU[color] || color; }
+function styleLabel(style) { return STYLE_RU[style] || style; }
+function dressNamePrimary(dress) { return dress.name_ru || dress.name; }
+function dressNameSecondary(dress) { return dress.name_ru ? dress.name : ''; }
+
 function filterCatalog() {
     renderCatalog();
 }
@@ -262,6 +373,18 @@ function selectDress(id, el) {
     updateGenerateBtn();
 }
 
+// Proactive auth guard. authedFetch's reactive 401 handler still works as a
+// safety net, but checking here means signed-out users see the modal *before*
+// the request goes out — friendlier and works even if the API is offline.
+async function ensureSignedIn() {
+    const auth = await getAuthHeader();
+    if (!auth) {
+        openAuthRequiredModal();
+        return false;
+    }
+    return true;
+}
+
 function handleDragOver(e) {
     e.preventDefault();
     e.currentTarget.classList.add('dragover');
@@ -273,11 +396,21 @@ function handleDrop(e) {
     e.preventDefault();
     e.currentTarget.classList.remove('dragover');
     const files = e.dataTransfer.files;
-    if (files.length > 0) uploadPhoto(files[0]);
+    if (files.length === 0) return;
+    ensureSignedIn().then(ok => { if (ok) uploadPhoto(files[0]); });
 }
 
 function handlePhotoUpload(e) {
-    if (e.target.files.length > 0) uploadPhoto(e.target.files[0]);
+    if (e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    ensureSignedIn().then(ok => {
+        if (ok) {
+            uploadPhoto(file);
+        } else {
+            // Reset file input so the user can re-trigger after sign-in.
+            e.target.value = '';
+        }
+    });
 }
 
 async function uploadPhoto(file) {
@@ -358,6 +491,9 @@ function updateGenerateBtn() {
 
 async function generateTryOn() {
     const btn = document.getElementById('generate-btn');
+    if (!(await ensureSignedIn())) {
+        return;
+    }
     btn.disabled = true;
     btn.textContent = 'Создаём…';
 
