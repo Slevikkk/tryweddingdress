@@ -487,6 +487,31 @@ function removeCustomDress() {
 function updateGenerateBtn() {
     const btn = document.getElementById('generate-btn');
     btn.disabled = !(uploadedPhotoId && (selectedDressId || customDressFile));
+    updateStepper();
+}
+
+// Visual stepper at the top of the try-on flow. The "current" step is the
+// earliest step that hasn't been completed yet, so users always see their
+// next action highlighted.
+function updateStepper() {
+    const stepper = document.querySelector('.tryon-stepper');
+    if (!stepper) return;
+    const hasPhoto = !!uploadedPhotoId;
+    const hasDress = !!(selectedDressId || customDressFile);
+    const hasResult = document.getElementById('result-image')?.style.display !== 'none'
+                   && document.getElementById('result-img')?.src;
+
+    const items = stepper.querySelectorAll('.tryon-stepper-item');
+    if (items.length < 3) return;
+    [items[0], items[1], items[2]].forEach((el) => {
+        el.classList.remove('is-active', 'is-done');
+    });
+    if (hasPhoto) items[0].classList.add('is-done');
+    if (hasDress) items[1].classList.add('is-done');
+    if (hasResult) items[2].classList.add('is-done');
+    if (!hasPhoto)        items[0].classList.add('is-active');
+    else if (!hasDress)   items[1].classList.add('is-active');
+    else                  items[2].classList.add('is-active');
 }
 
 async function generateTryOn() {

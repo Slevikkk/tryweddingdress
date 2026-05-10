@@ -15,15 +15,33 @@
         <div class="nav-container">
             <a href="/" class="logo">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="/" class="nav-ghost">Главная</a>
+                <!-- Logged-out -->
+                <a href="/" class="nav-ghost" data-auth="signed-out">Главная</a>
+                <a href="/#tryon" class="nav-ghost" data-auth="signed-out">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-out">Тарифы</a>
+                <!-- Logged-in -->
+                <a href="/" class="nav-ghost" data-auth="signed-in">Создать</a>
+                <a href="/gallery.html" class="nav-ghost" data-auth="signed-in">Галерея</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-in">Тарифы</a>
+            </div>
+            <div class="nav-account">
+                <!-- Logged-out -->
                 <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
                 <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
-                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
+                <!-- Logged-in -->
+                <a href="/dashboard.html" class="nav-credits" data-auth="signed-in" data-auth-credits title="Кредиты — открыть кабинет">
+                    <svg class="nav-credits-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v10M9 9.5c0-1.1 1.3-2 3-2s3 .9 3 2-1.3 2-3 2-3 .9-3 2 1.3 2 3 2 3-.9 3-2"/>
+                    </svg>
+                    <span data-auth-credits-value>—</span>
+                </a>
+                <a href="/dashboard.html" class="nav-avatar" data-auth="signed-in" data-auth-initial title="Личный кабинет">—</a>
             </div>
         </div>
     </nav>
 
-    <article class="policy-shell">
+    <article class="policy-shell policy-shell-wide">
         <h1>Тарифы</h1>
         <p class="policy-meta">
             1 кредит = 1 примерка. Кредиты не сгорают и хранятся в вашем
@@ -38,6 +56,11 @@
                 <div class="pricing-tries">5 примерок</div>
                 <div class="pricing-price">1490 ₽</div>
                 <div class="pricing-per">298 ₽ за примерку</div>
+                <ul class="pricing-includes">
+                    <li>Доступ ко всему каталогу</li>
+                    <li>История примерок в кабинете</li>
+                    <li>Возврат кредита при сбое</li>
+                </ul>
                 <button class="btn-secondary pricing-buy" onclick="handleBuy('starter', this)">Купить</button>
             </div>
             <div class="pricing-card pricing-featured" data-pack="bride">
@@ -46,6 +69,12 @@
                 <div class="pricing-tries">20 примерок</div>
                 <div class="pricing-price">2290 ₽</div>
                 <div class="pricing-per">115 ₽ за примерку</div>
+                <ul class="pricing-includes">
+                    <li>Всё из «Старта»</li>
+                    <li>Загрузить своё платье из салона</li>
+                    <li>Скачивание в высоком качестве</li>
+                    <li>Приоритетная поддержка</li>
+                </ul>
                 <button class="btn-primary pricing-buy" onclick="handleBuy('bride', this)">Купить</button>
             </div>
             <div class="pricing-card" data-pack="full">
@@ -53,6 +82,11 @@
                 <div class="pricing-tries">60 примерок</div>
                 <div class="pricing-price">4690 ₽</div>
                 <div class="pricing-per">78 ₽ за примерку</div>
+                <ul class="pricing-includes">
+                    <li>Всё из «Невесты»</li>
+                    <li>Лучшая цена за примерку</li>
+                    <li>Достаточно на всех подружек невесты</li>
+                </ul>
                 <button class="btn-secondary pricing-buy" onclick="handleBuy('full', this)">Купить</button>
             </div>
         </div>

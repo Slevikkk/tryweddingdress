@@ -155,7 +155,44 @@
         for (var k = 0; k < emailEls.length; k++) {
             emailEls[k].textContent = user ? user.email : '';
         }
+
+        // Avatar monogram — fill with first letter of name (if profile loaded
+        // later) or email. Start with email letter so the navbar isn't empty
+        // before the profile fetch completes.
+        var initialEls = document.querySelectorAll('[data-auth-initial]');
+        for (var m = 0; m < initialEls.length; m++) {
+            initialEls[m].textContent = user
+                ? (user.email || '?').charAt(0).toUpperCase()
+                : '';
+        }
+
+        // Credits pill — kicks off a balance fetch in the background. The
+        // span inside the pill keeps showing the previous value until the
+        // fetch resolves to avoid layout flicker.
+        if (user) {
+            fillCreditsPills();
+        } else {
+            var creditEls = document.querySelectorAll('[data-auth-credits]');
+            for (var n = 0; n < creditEls.length; n++) {
+                var span = creditEls[n].querySelector('[data-auth-credits-value]');
+                if (span) span.textContent = '—';
+            }
+        }
     }
+
+    function fillCreditsPills() {
+        getCreditBalance().then(function (balance) {
+            var els = document.querySelectorAll('[data-auth-credits]');
+            for (var i = 0; i < els.length; i++) {
+                var span = els[i].querySelector('[data-auth-credits-value]');
+                if (span) span.textContent = String(balance);
+            }
+        }).catch(function () { /* ignore — pill stays at last known value */ });
+    }
+
+    // Refresh the credits pill on demand. Useful from buy-credits.js after
+    // a successful pack purchase, or from try-on flow after a generation.
+    window.TWD_REFRESH_CREDITS = fillCreditsPills;
 
     function bindAuthActions() {
         document.addEventListener('click', function (e) {

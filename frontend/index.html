@@ -241,15 +241,30 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" onclick="showPage('landing')">Try Wedding Dress</a>
+            <a href="#" class="logo" onclick="showPage('landing');return false;">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="#" class="nav-ghost" onclick="showPage('landing');return false;">Главная</a>
-                <a href="#" class="nav-ghost" onclick="showPage('tryon');return false;">Примерить</a>
-                <a href="#" class="nav-ghost" onclick="openBuyCreditsModal();return false;" data-auth="signed-in">Купить кредиты</a>
+                <!-- Logged-out -->
+                <a href="#" class="nav-ghost" data-auth="signed-out" onclick="showPage('landing');return false;">Главная</a>
+                <a href="#" class="nav-ghost" data-auth="signed-out" onclick="showPage('tryon');return false;">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-out">Тарифы</a>
+                <!-- Logged-in -->
+                <a href="#" class="nav-ghost" data-auth="signed-in" onclick="showPage('tryon');return false;">Создать</a>
+                <a href="/gallery.html" class="nav-ghost" data-auth="signed-in">Галерея</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-in">Тарифы</a>
+            </div>
+            <div class="nav-account">
+                <!-- Logged-out -->
                 <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
                 <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
-                <a href="/dashboard.html" class="nav-ghost" data-auth="signed-in">Кабинет</a>
-                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost" data-auth="signed-in">Выход</a>
+                <!-- Logged-in -->
+                <a href="/dashboard.html" class="nav-credits" data-auth="signed-in" data-auth-credits title="Кредиты — открыть кабинет">
+                    <svg class="nav-credits-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v10M9 9.5c0-1.1 1.3-2 3-2s3 .9 3 2-1.3 2-3 2-3 .9-3 2 1.3 2 3 2 3-.9 3-2"/>
+                    </svg>
+                    <span data-auth-credits-value>—</span>
+                </a>
+                <a href="/dashboard.html" class="nav-avatar" data-auth="signed-in" data-auth-initial title="Личный кабинет">—</a>
             </div>
         </div>
     </nav>
@@ -418,6 +433,24 @@
                 </div>
             </div>
 
+            <!-- Wizard progress indicator. The active step lights up; finished
+                 steps get a check mark. JS keeps this in sync with state via
+                 updateStepper() in app.js. -->
+            <ol class="tryon-stepper" aria-label="Прогресс примерки">
+                <li class="tryon-stepper-item is-active">
+                    <span class="tryon-stepper-num">1</span>
+                    <span class="tryon-stepper-label">Фото</span>
+                </li>
+                <li class="tryon-stepper-item">
+                    <span class="tryon-stepper-num">2</span>
+                    <span class="tryon-stepper-label">Платье</span>
+                </li>
+                <li class="tryon-stepper-item">
+                    <span class="tryon-stepper-num">3</span>
+                    <span class="tryon-stepper-label">Готово</span>
+                </li>
+            </ol>
+
             <div class="tryon-grid">
                 <!-- Step 1: Upload Photo -->
                 <div class="tryon-step">
@@ -435,6 +468,30 @@
                         <div id="upload-preview" class="upload-preview" style="display:none;">
                             <img id="preview-img" src="" alt="Ваше фото">
                             <button class="btn-remove" onclick="removePhoto()">&times;</button>
+                        </div>
+                    </div>
+
+                    <!-- Tips sidebar inside step 1 — what works, what doesn't.
+                         Mirrors trymydress.com photo-tips, helps users get a
+                         decent generation on their first try. -->
+                    <div class="tryon-tips">
+                        <div class="tryon-tips-col tryon-tips-good">
+                            <h4>Что работает</h4>
+                            <ul>
+                                <li>В полный рост, лицо не обрезано</li>
+                                <li>Простой однотонный фон</li>
+                                <li>Хорошее равномерное освещение</li>
+                                <li>Прямая поза, руки опущены</li>
+                            </ul>
+                        </div>
+                        <div class="tryon-tips-col tryon-tips-bad">
+                            <h4>Чего избегать</h4>
+                            <ul>
+                                <li>Несколько людей на фото</li>
+                                <li>Сложный фон с посторонними деталями</li>
+                                <li>Резкие тени, контровый свет</li>
+                                <li>Ракурс снизу или сверху</li>
+                            </ul>
                         </div>
                     </div>
                 </div>

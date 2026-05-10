@@ -36,8 +36,9 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
 }
 .nav-container {
     max-width: 1200px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 24px;
+    display: flex; align-items: center;
+    padding: 14px 24px;
+    gap: 18px;
 }
 .logo {
     font-family: 'Playfair Display', serif;
@@ -45,17 +46,20 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     color: var(--text); text-decoration: none;
 }
 .nav-links {
-    display: flex; gap: 12px;
+    display: flex; gap: 6px;
     align-items: center;
+    flex: 1;
+    justify-content: flex-end;
 }
-.nav-links a {
+.nav-links a, .nav-account a {
     color: var(--text-light); text-decoration: none;
     font-size: 0.95rem; font-weight: 500;
-    transition: color 0.2s, background 0.2s, border-color 0.2s;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
     line-height: 1;
     display: inline-flex; align-items: center;
     padding: 8px 12px;
     border-radius: 8px;
+    font-family: 'Inter', sans-serif;
 }
 .nav-links a:hover { color: var(--accent-dark); }
 .nav-links a.nav-ghost { color: var(--text-light); }
@@ -63,14 +67,75 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     color: var(--accent-dark);
     background: rgba(197,168,128,0.08);
 }
-.nav-links a.nav-cta {
+.nav-links a.nav-cta, .nav-account a.nav-cta {
     background: var(--accent); color: #fff;
     padding: 8px 18px;
     border-radius: 8px;
     font-weight: 600;
 }
-.nav-links a.nav-cta:hover {
+.nav-links a.nav-cta:hover, .nav-account a.nav-cta:hover {
     background: var(--accent-dark); color: #fff;
+}
+
+/* Auth state defaults — start signed-out (logged-out CTAs visible) and let
+   auth.js reveal signed-in elements after the Supabase session resolves. This
+   keeps the navbar correct for the 99% of visitors who are logged out, even
+   if JS is slow or fails. */
+[data-auth="signed-in"] { display: none; }
+
+/* Right-side account block — visually separated from nav-links by a soft
+   divider, like trymydress.com. Holds either Login/Register CTAs (signed-out)
+   or credits pill + avatar circle (signed-in). */
+.nav-account {
+    display: flex; gap: 10px; align-items: center;
+    padding-left: 16px;
+    border-left: 1px solid var(--border);
+}
+.nav-account a.nav-ghost { color: var(--text-light); }
+.nav-account a.nav-ghost:hover {
+    color: var(--accent-dark);
+    background: rgba(197,168,128,0.08);
+}
+
+/* Credits pill — clickable, leads to dashboard. Selectors are scoped under
+   .nav-account so we don't fight other contexts; no !important. */
+.nav-account .nav-credits {
+    gap: 6px;
+    background: rgba(197, 168, 128, 0.14);
+    border: 1px solid rgba(197, 168, 128, 0.30);
+    color: var(--accent-dark);
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+.nav-account .nav-credits:hover {
+    background: rgba(197, 168, 128, 0.24);
+    color: var(--accent-dark);
+}
+.nav-credits-icon {
+    width: 14px; height: 14px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Avatar circle — first-letter monogram, links to dashboard. */
+.nav-account .nav-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    justify-content: center;
+    font-weight: 600; font-size: 0.92rem;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    padding: 0;
+    text-transform: uppercase;
+}
+.nav-account .nav-avatar:hover {
+    border-color: var(--accent-dark);
+    transform: scale(1.05);
+    color: #fff;
 }
 
 /* HERO */
@@ -89,11 +154,14 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     margin-bottom: 32px; line-height: 1.7;
 }
 
-/* BUTTONS */
+/* BUTTONS — explicit font-family because <button> defaults to system font in
+   browsers; without this, .btn-primary on signup/login showed up in a different
+   font from the rest of the page. */
 .btn-primary {
     display: inline-block;
     background: var(--accent); color: #fff;
     border: none; padding: 14px 36px;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem; font-weight: 600;
     border-radius: 8px; cursor: pointer;
     text-decoration: none;
@@ -107,8 +175,10 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     background: transparent; color: var(--accent-dark);
     border: 2px solid var(--accent);
     padding: 10px 24px;
+    font-family: 'Inter', sans-serif;
     font-size: 0.9rem; font-weight: 500;
     border-radius: 8px; cursor: pointer;
+    text-decoration: none;
     transition: all 0.2s;
 }
 .btn-secondary:hover { background: var(--accent); color: #fff; }
@@ -293,7 +363,155 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
 }
 .tryon-container h2 {
     text-align: center; font-size: 2rem;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
+}
+
+/* Wizard step indicator: numbered pills with connecting line. Mirrors the
+   trymydress 3-step wizard. JS toggles .is-active and .is-done. */
+.tryon-stepper {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto 36px;
+    padding: 0;
+    max-width: 720px;
+    flex-wrap: wrap;
+}
+.tryon-stepper-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 14px 8px 8px;
+    background: transparent;
+    border-radius: 999px;
+    transition: background 0.2s, color 0.2s;
+}
+.tryon-stepper-item + .tryon-stepper-item::before {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 4px;
+}
+.tryon-stepper-num {
+    width: 28px; height: 28px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(197, 168, 128, 0.14);
+    color: var(--accent-dark);
+    font-weight: 600;
+    font-size: 0.88rem;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+}
+.tryon-stepper-item.is-active {
+    background: rgba(197, 168, 128, 0.10);
+    color: var(--text);
+}
+.tryon-stepper-item.is-active .tryon-stepper-num {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(197, 168, 128, 0.18);
+}
+.tryon-stepper-item.is-done .tryon-stepper-num {
+    background: var(--accent-dark);
+    color: #fff;
+}
+.tryon-stepper-item.is-done .tryon-stepper-num::after {
+    content: "";
+    display: block;
+    width: 10px; height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) translate(0, -1px);
+    margin-top: -4px;
+}
+.tryon-stepper-item.is-done .tryon-stepper-num span,
+.tryon-stepper-item.is-done .tryon-stepper-num {
+    /* Hide numeric digit when done; the check covers the same area. */
+}
+.tryon-stepper-item.is-done .tryon-stepper-num {
+    color: transparent;
+}
+@media (max-width: 600px) {
+    .tryon-stepper {
+        gap: 4px;
+    }
+    .tryon-stepper-item {
+        padding: 6px 10px 6px 6px;
+        font-size: 0.85rem;
+    }
+    .tryon-stepper-item + .tryon-stepper-item::before {
+        width: 14px; margin: 0 2px;
+    }
+}
+
+/* Photo tips inside step 1 — two columns, what works / what doesn't. */
+.tryon-tips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+}
+.tryon-tips-col h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 8px;
+    padding-left: 22px;
+    position: relative;
+}
+.tryon-tips-good h4 { color: #1f5c34; }
+.tryon-tips-bad h4 { color: #8a3a3a; }
+.tryon-tips-col h4::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 1px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+}
+.tryon-tips-good h4::before {
+    background: #e9f5ee;
+    box-shadow: inset 0 0 0 1.5px #1f5c34;
+}
+.tryon-tips-bad h4::before {
+    background: #fde9e9;
+    box-shadow: inset 0 0 0 1.5px #8a3a3a;
+}
+.tryon-tips-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--text);
+    line-height: 1.45;
+}
+.tryon-tips-col li {
+    position: relative;
+    padding: 4px 0 4px 16px;
+}
+.tryon-tips-col li::before {
+    content: "";
+    position: absolute;
+    left: 4px; top: 11px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+@media (max-width: 600px) {
+    .tryon-tips { grid-template-columns: 1fr; gap: 10px; }
 }
 .tryon-grid {
     display: grid;

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея примерок — Try Wedding Dress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">Try Wedding Dress</a>
+            <div class="nav-links">
+                <!-- Logged-out -->
+                <a href="/" class="nav-ghost" data-auth="signed-out">Главная</a>
+                <a href="/#tryon" class="nav-ghost" data-auth="signed-out">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-out">Тарифы</a>
+                <!-- Logged-in -->
+                <a href="/" class="nav-ghost" data-auth="signed-in">Создать</a>
+                <a href="/gallery.html" class="nav-ghost" data-auth="signed-in">Галерея</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-in">Тарифы</a>
+            </div>
+            <div class="nav-account">
+                <!-- Logged-out -->
+                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
+                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
+                <!-- Logged-in -->
+                <a href="/dashboard.html" class="nav-credits" data-auth="signed-in" data-auth-credits title="Кредиты — открыть кабинет">
+                    <svg class="nav-credits-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v10M9 9.5c0-1.1 1.3-2 3-2s3 .9 3 2-1.3 2-3 2-3 .9-3 2 1.3 2 3 2 3-.9 3-2"/>
+                    </svg>
+                    <span data-auth-credits-value>—</span>
+                </a>
+                <a href="/dashboard.html" class="nav-avatar" data-auth="signed-in" data-auth-initial title="Личный кабинет">—</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-shell">
+        <div class="dashboard-header">
+            <div>
+                <h1>Галерея примерок</h1>
+                <div class="user-meta">Все примерки, которые вы сделали — нажмите, чтобы открыть результат.</div>
+            </div>
+            <a href="/" class="btn-primary">Новая примерка</a>
+        </div>
+
+        <div id="gallery-grid" class="gallery-grid">
+            <div class="history-empty">Загрузка…</div>
+        </div>
+    </div>
+
+    <!-- Lightbox for opening a single tryon. -->
+    <div id="gallery-lightbox" class="modal" style="display:none;" onclick="if(event.target===this)closeLightbox()">
+        <div class="modal-content gallery-lightbox-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeLightbox()">&times;</button>
+            <img id="gallery-lightbox-img" alt="">
+            <div class="gallery-lightbox-meta">
+                <div id="gallery-lightbox-name"></div>
+                <div id="gallery-lightbox-when" class="when"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>На технологии AI &middot; Фото обрабатываются безопасно и не хранятся постоянно</p>
+        <p style="margin-top:8px;">
+            <a href="/pricing.html" style="color:inherit;">Тарифы</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/offer.html" style="color:inherit;">Оферта</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/contacts.html" style="color:inherit;">Контакты</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/privacy.html" style="color:inherit;">Конфиденциальность</a>
+            &nbsp;&middot;&nbsp;
+            <a href="/terms.html" style="color:inherit;">Правила</a>
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Page is gated — anonymous users get bounced to /login.html.
+        window.TWD_AUTH.requireAuth();
+
+        var STATUS_LABELS = {
+            'pending': 'в очереди',
+            'running': 'обрабатывается',
+            'completed': 'готово',
+            'failed': 'ошибка',
+            'canceled': 'отменено',
+        };
+
+        function escapeHtml(s) {
+            return String(s || '').replace(/[&<>"]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+            });
+        }
+
+        function openLightbox(g) {
+            var img = g.result_photo_url || g.dress_image_url || '';
+            document.getElementById('gallery-lightbox-img').src = img;
+            document.getElementById('gallery-lightbox-img').alt =
+                'Примерка ' + (g.dress_name || '');
+            document.getElementById('gallery-lightbox-name').textContent =
+                g.dress_name || 'Примерка';
+            document.getElementById('gallery-lightbox-when').textContent =
+                new Date(g.created_at).toLocaleString('ru-RU');
+            document.getElementById('gallery-lightbox').style.display = 'flex';
+        }
+        function closeLightbox() {
+            document.getElementById('gallery-lightbox').style.display = 'none';
+        }
+        window.openLightbox = openLightbox;
+        window.closeLightbox = closeLightbox;
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        (async function () {
+            var user = await window.TWD_AUTH.getUser();
+            if (!user) return;
+
+            var generations = await window.TWD_AUTH.listGenerations(200);
+            var grid = document.getElementById('gallery-grid');
+            if (!generations || generations.length === 0) {
+                grid.innerHTML =
+                    '<div class="history-empty">Примерок пока нет — ' +
+                    '<a href="/" style="color:var(--accent-dark);">примерьте первое платье</a>.</div>';
+                return;
+            }
+
+            grid.innerHTML = generations.map(function (g, i) {
+                var img = g.result_photo_url || g.dress_image_url || '';
+                var when = new Date(g.created_at).toLocaleString('ru-RU');
+                var name = escapeHtml(g.dress_name || 'Примерка');
+                var label = STATUS_LABELS[g.status] || g.status;
+                return (
+                    '<button class="gallery-item" data-i="' + i + '" type="button">' +
+                        '<img src="' + img + '" alt="" loading="lazy">' +
+                        '<div class="gallery-item-overlay">' +
+                            '<div class="gallery-item-name">' + name + '</div>' +
+                            '<div class="gallery-item-when">' + when + '</div>' +
+                            '<span class="status ' + g.status + '">' + label + '</span>' +
+                        '</div>' +
+                    '</button>'
+                );
+            }).join('');
+
+            // Bind click handlers.
+            var items = grid.querySelectorAll('.gallery-item');
+            for (var i = 0; i < items.length; i++) {
+                (function (idx) {
+                    items[idx].addEventListener('click', function () {
+                        openLightbox(generations[idx]);
+                    });
+                })(i);
+            }
+        })();
+    </script>
+</body>
+</html>
