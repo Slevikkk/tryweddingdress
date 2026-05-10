@@ -677,6 +677,19 @@ function resetResult() {
 }
 
 // Init
+function applyHashRoute() {
+    // Cross-page deep link: dashboard.html / gallery.html / etc. point at
+    // "/#tryon" when they want to open the wizard. Since index.html is a
+    // single-page shell with showPage(), translate the hash on first load
+    // (and on hashchange events) into the right page swap.
+    const h = (window.location.hash || '').replace(/^#/, '');
+    if (h === 'tryon' && document.getElementById('page-tryon')) {
+        showPage('tryon');
+    } else if (h === 'landing' && document.getElementById('page-landing')) {
+        showPage('landing');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadExamples();
     loadCatalog();
@@ -684,4 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('.tryon-wizard')) {
         setStep(1, {scroll: false});
     }
+    applyHashRoute();
 });
+
+window.addEventListener('hashchange', applyHashRoute);
