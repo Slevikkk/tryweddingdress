@@ -487,12 +487,40 @@ function removeCustomDress() {
 function updateGenerateBtn() {
     const btn = document.getElementById('generate-btn');
     btn.disabled = !(uploadedPhotoId && (selectedDressId || customDressFile));
+    // Step-1 / step-2 "next" buttons follow the same gating logic as the
+    // generate button: step 1 needs a photo, step 2 needs photo+dress.
+    const step1Next = document.getElementById('step1-next');
+    if (step1Next) step1Next.disabled = !uploadedPhotoId;
+    const step2Next = document.getElementById('step2-next');
+    if (step2Next) step2Next.disabled = !(uploadedPhotoId && (selectedDressId || customDressFile));
     updateStepper();
 }
 
-// Visual stepper at the top of the try-on flow. The "current" step is the
-// earliest step that hasn't been completed yet, so users always see their
-// next action highlighted.
+// Step state — which wizard step is currently visible. The visible step
+// renders full-width; others are hidden via [data-current-step] on the
+// container.
+let currentTryonStep = 1;
+
+function setStep(n, opts) {
+    const scroll = !opts || opts.scroll !== false;
+    currentTryonStep = Math.max(1, Math.min(3, n | 0));
+    const wizard = document.querySelector('.tryon-wizard');
+    if (wizard) wizard.setAttribute('data-current-step', String(currentTryonStep));
+    if (scroll) {
+        // Scroll to the top of the wizard so the user sees the new step
+        // without having to hunt for it.
+        const tryonContainer = document.querySelector('.tryon-container');
+        if (tryonContainer) {
+            tryonContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+    }
+    updateStepper();
+}
+
+// Visual stepper at the top of the try-on flow. Marks completed steps as
+// is-done, the active step as is-active, and disables stepper buttons for
+// steps the user can't yet jump to (forward jumps are gated until the
+// previous step is satisfied; backward jumps are always allowed).
 function updateStepper() {
     const stepper = document.querySelector('.tryon-stepper');
     if (!stepper) return;
@@ -503,15 +531,20 @@ function updateStepper() {
 
     const items = stepper.querySelectorAll('.tryon-stepper-item');
     if (items.length < 3) return;
-    [items[0], items[1], items[2]].forEach((el) => {
+
+    // Reachability: the user can always go back, can go to step 2 once a
+    // photo is uploaded, and to step 3 once both photo and dress are set.
+    const reachable = [true, hasPhoto, hasPhoto && hasDress];
+    // Done state: a step is "done" if its prerequisite has been satisfied
+    // and it's behind the current step.
+    const done = [hasPhoto, hasDress, hasResult];
+
+    items.forEach((el, i) => {
         el.classList.remove('is-active', 'is-done');
+        el.disabled = !reachable[i];
+        if (done[i]) el.classList.add('is-done');
+        if (i + 1 === currentTryonStep) el.classList.add('is-active');
     });
-    if (hasPhoto) items[0].classList.add('is-done');
-    if (hasDress) items[1].classList.add('is-done');
-    if (hasResult) items[2].classList.add('is-done');
-    if (!hasPhoto)        items[0].classList.add('is-active');
-    else if (!hasDress)   items[1].classList.add('is-active');
-    else                  items[2].classList.add('is-active');
 }
 
 async function generateTryOn() {
@@ -583,10 +616,16 @@ function resetResult() {
     document.getElementById('result-image').style.display = 'none';
     document.getElementById('result-actions').style.display = 'none';
     document.getElementById('result-placeholder').style.display = 'block';
+    document.getElementById('result-img').src = '';
+    updateStepper();
 }
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     loadExamples();
     loadCatalog();
+    // Make sure the wizard starts on step 1 with the right stepper state.
+    if (document.querySelector('.tryon-wizard')) {
+        setStep(1, {scroll: false});
+    }
 });

@@ -382,11 +382,19 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     justify-content: center;
     align-items: center;
     gap: 8px;
-    margin: 0 auto 36px;
+    margin: 0 auto 28px;
     padding: 0;
     max-width: 720px;
     flex-wrap: wrap;
 }
+.tryon-stepper > li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+/* Stepper buttons. Reset native button chrome and behave as inline-flex
+   pills. JS toggles is-active / is-done; setStep() also sets `disabled` on
+   buttons whose step isn't yet reachable. */
 .tryon-stepper-item {
     display: inline-flex;
     align-items: center;
@@ -397,10 +405,20 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     font-weight: 500;
     padding: 8px 14px 8px 8px;
     background: transparent;
+    border: none;
     border-radius: 999px;
+    cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
-.tryon-stepper-item + .tryon-stepper-item::before {
+.tryon-stepper-item:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+.tryon-stepper-item:not(:disabled):hover {
+    background: rgba(197, 168, 128, 0.10);
+    color: var(--text);
+}
+.tryon-stepper > li + li::before {
     content: "";
     display: inline-block;
     width: 28px;
@@ -521,21 +539,66 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
 @media (max-width: 600px) {
     .tryon-tips { grid-template-columns: 1fr; gap: 10px; }
 }
-.tryon-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
+/* Sequential wizard — only one step is visible at a time, full-width.
+   The container reads its currently-active step from data-current-step
+   and CSS hides the others. setStep() in app.js drives the value. */
+.tryon-wizard {
     margin-bottom: 32px;
+    max-width: 920px;
+    margin-left: auto; margin-right: auto;
 }
 .tryon-step {
     background: var(--card-bg);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: 36px 32px 28px;
     box-shadow: var(--shadow);
+    display: none;
 }
-.tryon-step h3 {
-    font-size: 1.1rem; margin-bottom: 16px;
-    color: var(--accent-dark);
+.tryon-wizard[data-current-step="1"] .tryon-step[data-step-num="1"],
+.tryon-wizard[data-current-step="2"] .tryon-step[data-step-num="2"],
+.tryon-wizard[data-current-step="3"] .tryon-step[data-step-num="3"] {
+    display: block;
+}
+.tryon-step-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.tryon-step-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+.tryon-step-sub {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 0;
+}
+/* Step nav row at the bottom of each step — Back left, Next right.
+   step1-next sits alone on the right via tryon-step-spacer. */
+.tryon-step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+}
+.tryon-step-spacer { flex: 1; }
+.tryon-step-nav .btn-primary,
+.tryon-step-nav .btn-secondary {
+    min-width: 140px;
+}
+@media (max-width: 600px) {
+    .tryon-step { padding: 24px 18px 20px; }
+    .tryon-step-header h3 { font-size: 1.3rem; }
+    .tryon-step-nav { flex-wrap: wrap; }
+    .tryon-step-nav .btn-primary,
+    .tryon-step-nav .btn-secondary {
+        flex: 1; min-width: 0;
+    }
 }
 
 /* UPLOAD ZONE */
@@ -755,18 +818,14 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
     justify-content: center;
 }
 
-/* GENERATE BUTTON */
+/* GENERATE BUTTON — Примерить inside step 3 nav. Inherits from .btn-primary,
+   just bumps padding / font for a heavier feel since this is the climax of
+   the flow. */
 .btn-generate {
-    display: block; width: 100%; max-width: 400px;
-    margin: 0 auto;
-    background: var(--accent); color: #fff;
-    border: none; padding: 16px 36px;
-    font-size: 1.1rem; font-weight: 600;
-    border-radius: 8px; cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    padding: 16px 36px;
+    font-size: 1.05rem;
+    min-width: 200px;
 }
-.btn-generate:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }
-.btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 /* FOOTER */
 footer {
@@ -888,7 +947,6 @@ footer {
 .logo { white-space: nowrap; }
 
 @media (max-width: 900px) {
-    .tryon-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 2.2rem; }
     .examples-grid { grid-template-columns: 1fr; }
     .modal-grid { grid-template-columns: 1fr; }
