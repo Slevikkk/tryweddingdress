@@ -198,13 +198,15 @@ async function loadCatalog() {
 
 const FILTER_FIELD_BLACKLIST = new Set([
     'id', 'name', 'name_en', 'name_ru', 'description',
-    'image', 'image_url', 'vendor', 'price', 'currency',
+    'image', 'image_url', 'price', 'currency',
     'source', 'source_url',
 ]);
 
 // Per-field display config: human label + value translations. Falls back to
 // auto-derived label and the raw value if the field is unknown.
 const FILTER_FIELD_CONFIG = {
+    vendor: { label: 'Бренд' },
+    brand: { label: 'Бренд' },
     style: { label: 'Силуэт', valueLabels: () => STYLE_RU },
     color: { label: 'Цвет', valueLabels: () => COLOR_RU },
     silhouette: { label: 'Силуэт' },
