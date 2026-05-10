@@ -12,13 +12,18 @@ name = "tryweddingdress"
 compatibility_date = "2025-04-01"
 pages_build_output_dir = "frontend"
 
-# --- Production env vars (mirrored from CF dashboard for documentation) ------
-# Set the *real* values in:
-#   https://dash.cloudflare.com/2800aa08dc342b00dafd8b561c922e2c/pages/view/tryweddingdress/settings/environment-variables
-# Mark SUPABASE_SERVICE_ROLE_KEY, FASHN_API_KEY, YOOKASSA_SECRET_KEY as
-# "Encrypted" (secret) — the rest are plain.
+# --- Plain-text env vars ------------------------------------------------------
+# wrangler pages deploy overwrites the dashboard "Variables and Secrets" page
+# from this file on every deploy. Encrypted (secret_text) vars survive that
+# round-trip because CF can't read them back, but plain vars get wiped.
+# So: declare every public env var here. Secrets stay in the dashboard:
+#   https://dash.cloudflare.com/2800aa08dc342b00dafd8b561c922e2c/pages/view/tryweddingdress/settings
+# Required encrypted secrets (set in dashboard):
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - FASHN_API_KEY
+#   - YOOKASSA_SECRET_KEY (later, when YooKassa lands)
 [vars]
-# SUPABASE_URL = "https://uqevnxxorffumbzwldkx.supabase.co"
+SUPABASE_URL = "https://uqevnxxorffumbzwldkx.supabase.co"
 # YOOKASSA_DISABLE_IP_CHECK = "0"
 # YOOKASSA_WEBHOOK_IPS_ALLOWLIST = ""
 
