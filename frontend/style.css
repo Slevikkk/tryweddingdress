@@ -759,6 +759,315 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
 .upload-own-dress { margin-top: 8px; text-align: center; }
 
+/* ============================================================================
+   STEP 2 — Source tabs (Catalog vs Custom upload)
+   ============================================================================
+   Visually a segmented control. Each tab toggles its matching .tryon-source-pane.
+*/
+.tryon-source-tabs {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin: 0 auto 22px;
+    max-width: 480px;
+    gap: 4px;
+}
+.tryon-source-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-light);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+.tryon-source-tab:hover { color: var(--text); }
+.tryon-source-tab.is-active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(197,168,128,0.28);
+}
+.tryon-source-pane { display: none; }
+.tryon-source-pane.is-active { display: block; }
+
+/* ============================================================================
+   STEP 2 — Catalog builder (sidebar accordions + dress grid)
+   ============================================================================
+*/
+.catalog-builder {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+.catalog-builder-side {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px 16px;
+}
+.catalog-builder-side-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+.catalog-builder-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+.catalog-builder-reset:hover {
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+
+/* Accordion (one per categorical catalog field) ----------------------------- */
+.catalog-accordions { display: flex; flex-direction: column; }
+.filter-accordion {
+    border-bottom: 1px solid var(--border);
+}
+.filter-accordion:last-child { border-bottom: none; }
+.filter-accordion-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 2px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+}
+.filter-accordion-label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text);
+    flex-shrink: 0;
+}
+.filter-accordion-value {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--accent-dark);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.filter-accordion-value em {
+    font-style: normal;
+    color: var(--text-light);
+    font-weight: 400;
+}
+.filter-accordion-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-light);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+.filter-accordion.is-open .filter-accordion-chevron {
+    transform: rotate(180deg);
+}
+.filter-accordion-body {
+    display: none;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0 14px;
+}
+.filter-accordion.is-open .filter-accordion-body {
+    display: flex;
+}
+.filter-option {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.filter-option:hover {
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+.filter-option.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+/* Selected-parameters summary (matches the "checklist" panel in trymydress) -- */
+.catalog-summary {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(197,168,128,0.07);
+    border: 1px solid rgba(197,168,128,0.18);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.catalog-summary:empty {
+    display: none;
+}
+.catalog-summary-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    padding: 3px 0;
+}
+.catalog-summary-row + .catalog-summary-row {
+    border-top: 1px dashed var(--border);
+}
+.catalog-summary-bullet {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    line-height: 1;
+    text-align: center;
+}
+.catalog-summary-row.is-set .catalog-summary-bullet {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+.catalog-summary-key {
+    color: var(--text-light);
+}
+.catalog-summary-val {
+    font-weight: 600;
+    color: var(--text);
+}
+.catalog-summary-val em {
+    font-weight: 400;
+    font-style: normal;
+    color: var(--text-light);
+}
+
+/* Right-side dress grid sits inside the same 2-col layout. Existing
+   .dress-catalog rules cover the cards — we only override the column
+   count here so two columns fit comfortably next to a 280px sidebar. */
+.catalog-builder-grid .dress-catalog {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    max-height: 640px;
+}
+
+/* Mobile: stack sidebar above grid, full width ------------------------------ */
+@media (max-width: 760px) {
+    .catalog-builder {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .catalog-builder-side {
+        padding: 12px 14px 14px;
+    }
+    .catalog-builder-grid .dress-catalog {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        max-height: none;
+    }
+}
+
+/* ============================================================================
+   STEP 2 — Custom dress upload pane
+   ============================================================================
+*/
+.custom-dress-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+}
+.custom-dress-drop {
+    width: 100%;
+    max-width: 520px;
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 44px 28px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg);
+    transition: border-color 0.18s, background 0.18s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.custom-dress-drop:hover {
+    border-color: var(--accent);
+    background: rgba(197,168,128,0.04);
+}
+.custom-dress-drop svg {
+    width: 42px;
+    height: 42px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+.custom-dress-drop:hover svg {
+    color: var(--accent-dark);
+}
+.custom-dress-drop-title {
+    margin: 0;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.98rem;
+}
+.custom-dress-drop-hint {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.83rem;
+}
+.custom-dress-preview {
+    position: relative;
+    display: inline-block;
+}
+.custom-dress-preview img {
+    max-height: 220px;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    object-fit: contain;
+}
+.custom-dress-preview .btn-remove-small {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    border: 2px solid var(--card-bg);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* RESULT */
 .result-area {
     min-height: 280px;
