@@ -4,8 +4,13 @@ let uploadedPhotoId = null;
 let selectedDressId = null;
 let customDressFile = null;
 let catalogData = [];
-let activeColorFilter = 'all';
-let activeStyleFilter = 'all';
+
+// activeFilters maps a catalog field key (e.g. 'style', 'color', or future
+// 'neckline' / 'fabric') to the currently selected value, or null for "any".
+// Built dynamically from whatever fields exist in catalog.json — see
+// detectFilterFields() below.
+let activeFilters = {};
+let activeTryonSource = 'catalog'; // 'catalog' | 'upload'
 
 // ---------------------------------------------------------------------------
 // Auth-aware fetch helpers
@@ -182,62 +187,240 @@ async function loadCatalog() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Data-driven catalog filters
+// ---------------------------------------------------------------------------
+// Today catalog.json items only have `style` and `color`. Tomorrow we expect
+// `silhouette`, `length`, `neckline`, `sleeves`, `fabric`, `details` etc. when
+// the catalog gets reworked around Russian dress brands. The filter UI is
+// built from whatever categorical fields actually appear in the data, so a
+// new field automatically gets a new accordion without touching any code.
+
+const FILTER_FIELD_BLACKLIST = new Set([
+    'id', 'name', 'name_en', 'name_ru', 'description',
+    'image', 'image_url', 'vendor', 'price', 'currency',
+    'source', 'source_url',
+]);
+
+// Per-field display config: human label + value translations. Falls back to
+// auto-derived label and the raw value if the field is unknown.
+const FILTER_FIELD_CONFIG = {
+    style: { label: 'Силуэт', valueLabels: () => STYLE_RU },
+    color: { label: 'Цвет', valueLabels: () => COLOR_RU },
+    silhouette: { label: 'Силуэт' },
+    length: { label: 'Длина' },
+    neckline: { label: 'Вырез' },
+    sleeves: { label: 'Рукава' },
+    fabric: { label: 'Ткань' },
+    details: { label: 'Детали' },
+    fit: { label: 'Посадка' },
+};
+
+function detectFilterFields(items) {
+    if (!items || items.length === 0) return [];
+    // Keys appear in insertion order; iterate every item so we don't miss
+    // fields that are only set on some dresses (common after schema migration).
+    const seen = new Map(); // key -> Set<string>
+    for (const item of items) {
+        for (const key of Object.keys(item)) {
+            if (FILTER_FIELD_BLACKLIST.has(key)) continue;
+            const v = item[key];
+            if (v == null || v === '') continue;
+            if (typeof v !== 'string') continue;
+            if (!seen.has(key)) seen.set(key, new Set());
+            seen.get(key).add(v);
+        }
+    }
+    const fields = [];
+    for (const [key, values] of seen.entries()) {
+        // Single-value fields are useless as filters; >15 values clutter UI.
+        if (values.size < 2 || values.size > 15) continue;
+        fields.push({ key, values: [...values].sort() });
+    }
+    return fields;
+}
+
+function fieldLabel(key) {
+    const cfg = FILTER_FIELD_CONFIG[key];
+    if (cfg && cfg.label) return cfg.label;
+    return key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+}
+
+function fieldValueLabel(key, value) {
+    const cfg = FILTER_FIELD_CONFIG[key];
+    if (cfg && cfg.valueLabels) {
+        const map = cfg.valueLabels();
+        if (map && Object.prototype.hasOwnProperty.call(map, value)) {
+            return map[value];
+        }
+    }
+    return value;
+}
+
 function buildFilters() {
-    const colors = [...new Set(catalogData.map(d => d.color))].sort();
-    const styles = [...new Set(catalogData.map(d => d.style))].sort();
+    const fields = detectFilterFields(catalogData);
+    activeFilters = {};
+    for (const f of fields) activeFilters[f.key] = null;
 
-    const colorContainer = document.getElementById('color-filters');
-    colorContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setColorFilter(\'all\', this)">Все</button>' +
-        colors.map(c => `<button class="filter-pill" data-filter="${c}" onclick="setColorFilter('${c}', this)">${colorLabel(c)}</button>`).join('');
-
-    const styleContainer = document.getElementById('style-filters');
-    styleContainer.innerHTML = '<button class="filter-pill active" data-filter="all" onclick="setStyleFilter(\'all\', this)">Все</button>' +
-        styles.map(s => `<button class="filter-pill" data-filter="${s}" onclick="setStyleFilter('${s}', this)">${styleLabel(s)}</button>`).join('');
+    const container = document.getElementById('catalog-accordions');
+    if (!container) return;
+    container.innerHTML = fields.map((f, idx) => renderAccordion(f, idx === 0)).join('');
+    renderSummary();
 }
 
-function setColorFilter(color, btn) {
-    activeColorFilter = color;
-    document.querySelectorAll('#color-filters .filter-pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    renderCatalog();
+function renderAccordion(field, openByDefault) {
+    const optionsHtml = field.values.map(v => `
+        <button type="button" class="filter-option" data-value="${escapeAttr(v)}" onclick="setFilterValue('${escapeAttr(field.key)}', '${escapeAttr(v)}', this)">
+            ${escapeHtml(fieldValueLabel(field.key, v))}
+        </button>
+    `).join('');
+    return `
+        <div class="filter-accordion${openByDefault ? ' is-open' : ''}" data-field="${escapeAttr(field.key)}">
+            <button type="button" class="filter-accordion-head" onclick="toggleAccordion('${escapeAttr(field.key)}')">
+                <span class="filter-accordion-label">${escapeHtml(fieldLabel(field.key))}</span>
+                <span class="filter-accordion-value" id="accordion-value-${escapeAttr(field.key)}"><em>любой</em></span>
+                <svg class="filter-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="filter-accordion-body">
+                <button type="button" class="filter-option is-active" data-value="" onclick="setFilterValue('${escapeAttr(field.key)}', null, this)">
+                    Любой
+                </button>
+                ${optionsHtml}
+            </div>
+        </div>
+    `;
 }
 
-function setStyleFilter(style, btn) {
-    activeStyleFilter = style;
-    document.querySelectorAll('#style-filters .filter-pill').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
+function toggleAccordion(key) {
+    const el = document.querySelector(`.filter-accordion[data-field="${cssEscape(key)}"]`);
+    if (el) el.classList.toggle('is-open');
+}
+
+function setFilterValue(key, value, btn) {
+    activeFilters[key] = value;
+
+    const accordion = document.querySelector(`.filter-accordion[data-field="${cssEscape(key)}"]`);
+    if (accordion) {
+        accordion.querySelectorAll('.filter-option').forEach(b => b.classList.remove('is-active'));
+        if (btn) btn.classList.add('is-active');
+        const valueEl = accordion.querySelector('.filter-accordion-value');
+        if (valueEl) {
+            valueEl.innerHTML = (value == null || value === '')
+                ? '<em>любой</em>'
+                : escapeHtml(fieldValueLabel(key, value));
+        }
+    }
+
     renderCatalog();
+    renderSummary();
+}
+
+function resetCatalogFilters() {
+    for (const key of Object.keys(activeFilters)) activeFilters[key] = null;
+    document.querySelectorAll('.filter-accordion').forEach(a => {
+        a.querySelectorAll('.filter-option').forEach(o => o.classList.remove('is-active'));
+        const first = a.querySelector('.filter-option');
+        if (first) first.classList.add('is-active');
+        const valueEl = a.querySelector('.filter-accordion-value');
+        if (valueEl) valueEl.innerHTML = '<em>любой</em>';
+    });
+    renderCatalog();
+    renderSummary();
+}
+
+function renderSummary() {
+    const container = document.getElementById('catalog-summary');
+    if (!container) return;
+    const keys = Object.keys(activeFilters);
+    if (keys.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    const rows = keys.map(key => {
+        const v = activeFilters[key];
+        const display = (v == null || v === '')
+            ? '<em>любой</em>'
+            : escapeHtml(fieldValueLabel(key, v));
+        const checked = (v == null || v === '') ? '○' : '✓';
+        return `
+            <div class="catalog-summary-row${(v == null || v === '') ? '' : ' is-set'}">
+                <span class="catalog-summary-bullet" aria-hidden="true">${checked}</span>
+                <span class="catalog-summary-key">${escapeHtml(fieldLabel(key))}</span>
+                <span class="catalog-summary-val">${display}</span>
+            </div>
+        `;
+    }).join('');
+    container.innerHTML = rows;
 }
 
 function renderCatalog() {
     const filtered = catalogData.filter(d => {
-        if (activeColorFilter !== 'all' && d.color !== activeColorFilter) return false;
-        if (activeStyleFilter !== 'all' && d.style !== activeStyleFilter) return false;
+        for (const key of Object.keys(activeFilters)) {
+            const want = activeFilters[key];
+            if (want == null || want === '') continue;
+            if (d[key] !== want) return false;
+        }
         return true;
     });
 
     const grid = document.getElementById('dress-catalog');
+    if (!grid) return;
     if (filtered.length === 0) {
-        grid.innerHTML = '<p class="no-results">Нет платьев по выбранным фильтрам</p>';
+        grid.innerHTML = '<p class="no-results">Под выбранные параметры платьев пока нет — попробуйте сбросить фильтры.</p>';
         return;
     }
     grid.innerHTML = filtered.map(dress => `
-        <div class="dress-card ${selectedDressId === dress.id ? 'selected' : ''}" data-id="${dress.id}" onclick="openDressModal('${dress.id}')">
+        <div class="dress-card ${selectedDressId === dress.id ? 'selected' : ''}" data-id="${escapeAttr(dress.id)}" onclick="openDressModal('${escapeAttr(dress.id)}')">
             <span class="selected-badge">Выбрано</span>
             <span class="zoom-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
             </span>
-            <img src="${dress.image_url}" alt="${dressNamePrimary(dress)}" loading="lazy">
+            <img src="${escapeAttr(dress.image_url)}" alt="${escapeAttr(dressNamePrimary(dress))}" loading="lazy">
             <div class="dress-info">
-                <div class="dress-name">${dressNamePrimary(dress)}</div>
-                ${dressNameSecondary(dress) ? `<div class="dress-name-en">${dressNameSecondary(dress)}</div>` : ''}
+                <div class="dress-name">${escapeHtml(dressNamePrimary(dress))}</div>
+                ${dressNameSecondary(dress) ? `<div class="dress-name-en">${escapeHtml(dressNameSecondary(dress))}</div>` : ''}
                 <div class="dress-meta">
                     <span class="dress-color" style="background:${getColorHex(dress.color)}"></span>
-                    ${colorLabel(dress.color)} · ${styleLabel(dress.style)}
+                    ${escapeHtml(colorLabel(dress.color))} · ${escapeHtml(styleLabel(dress.style))}
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[ch]));
+}
+function escapeAttr(s) {
+    return escapeHtml(s).replace(/`/g, '&#96;');
+}
+function cssEscape(s) {
+    if (window.CSS && window.CSS.escape) return window.CSS.escape(s);
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+}
+
+// ---------------------------------------------------------------------------
+// Tabs: Catalog vs custom upload
+// ---------------------------------------------------------------------------
+function setTryonSource(source) {
+    if (source !== 'catalog' && source !== 'upload') return;
+    activeTryonSource = source;
+    document.querySelectorAll('.tryon-source-tab').forEach(t => {
+        const isActive = t.dataset.source === source;
+        t.classList.toggle('is-active', isActive);
+        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tryon-source-pane').forEach(p => {
+        const isActive = p.dataset.source === source;
+        p.classList.toggle('is-active', isActive);
+        if (isActive) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+    });
+    updateGenerateBtn();
 }
 
 let modalDressId = null;
@@ -359,10 +542,6 @@ function colorLabel(color) { return COLOR_RU[color] || color; }
 function styleLabel(style) { return STYLE_RU[style] || style; }
 function dressNamePrimary(dress) { return dress.name_ru || dress.name; }
 function dressNameSecondary(dress) { return dress.name_ru ? dress.name : ''; }
-
-function filterCatalog() {
-    renderCatalog();
-}
 
 function selectDress(id, el) {
     selectedDressId = id;

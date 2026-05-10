@@ -7,8 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=v3-2">
-    <link rel="stylesheet" href="auth.css?v=v3-2">
+    <link rel="stylesheet" href="style.css?v=v3-3">
+    <link rel="stylesheet" href="auth.css?v=v3-3">
     <style>
         /* ===== Homepage hero (magazine layout) ===== */
         .hero-magazine {
@@ -514,33 +514,56 @@
                 <section class="tryon-step" data-step-num="2">
                     <header class="tryon-step-header">
                         <h3>Выберите платье</h3>
-                        <p class="tryon-step-sub">Из каталога или загрузите фото своего платья.</p>
+                        <p class="tryon-step-sub">Подберите из каталога по параметрам или загрузите фото своего платья.</p>
                     </header>
-                    <div class="catalog-filters">
-                        <div class="filter-group">
-                            <label>Цвет:</label>
-                            <div id="color-filters" class="filter-pills">
-                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">Все</button>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label>Стиль:</label>
-                            <div id="style-filters" class="filter-pills">
-                                <button class="filter-pill active" data-filter="all" onclick="filterCatalog()">Все</button>
+
+                    <!-- Source tabs: catalog vs custom upload ------------------------------- -->
+                    <div class="tryon-source-tabs" role="tablist">
+                        <button type="button" class="tryon-source-tab is-active" data-source="catalog" role="tab" aria-selected="true" onclick="setTryonSource('catalog')">
+                            Из каталога
+                        </button>
+                        <button type="button" class="tryon-source-tab" data-source="upload" role="tab" aria-selected="false" onclick="setTryonSource('upload')">
+                            Загрузить своё
+                        </button>
+                    </div>
+
+                    <!-- Catalog pane: accordion filters + dress grid ------------------------ -->
+                    <div class="tryon-source-pane is-active" data-source="catalog" role="tabpanel">
+                        <div class="catalog-builder">
+                            <aside class="catalog-builder-side">
+                                <div class="catalog-builder-side-head">
+                                    <span>Параметры</span>
+                                    <button type="button" class="catalog-builder-reset" onclick="resetCatalogFilters()">Сбросить</button>
+                                </div>
+                                <!-- accordions are rendered by buildFilters() in app.js -->
+                                <div id="catalog-accordions" class="catalog-accordions"></div>
+                                <!-- read-only summary of currently active filters, like the
+                                     "Selected" list in the trymydress reference -->
+                                <div id="catalog-summary" class="catalog-summary"></div>
+                            </aside>
+                            <div class="catalog-builder-grid">
+                                <div id="dress-catalog" class="dress-catalog"></div>
                             </div>
                         </div>
                     </div>
-                    <div id="dress-catalog" class="dress-catalog">
-                        <!-- filled by JS -->
-                    </div>
-                    <div class="upload-own-dress">
-                        <label class="btn-secondary" style="cursor:pointer;">
-                            Загрузить своё платье
+
+                    <!-- Custom upload pane: drop zone + preview ----------------------------- -->
+                    <div class="tryon-source-pane" data-source="upload" role="tabpanel" hidden>
+                        <div class="custom-dress-zone">
+                            <label class="custom-dress-drop" for="custom-dress-input">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <p class="custom-dress-drop-title">Перетащите фото вашего платья</p>
+                                <p class="custom-dress-drop-hint">или нажмите, чтобы выбрать файл — JPG, PNG, до 10 МБ</p>
+                            </label>
                             <input type="file" id="custom-dress-input" accept="image/*" onchange="handleCustomDress(event)" hidden>
-                        </label>
-                        <div id="custom-dress-preview" style="display:none;margin-top:8px;">
-                            <img id="custom-dress-img" src="" alt="Ваше платье" style="max-height:80px;border-radius:8px;">
-                            <button class="btn-remove-small" onclick="removeCustomDress()">&times;</button>
+                            <div id="custom-dress-preview" class="custom-dress-preview" style="display:none;">
+                                <img id="custom-dress-img" src="" alt="Ваше платье">
+                                <button type="button" class="btn-remove-small" onclick="removeCustomDress()" aria-label="Убрать платье">&times;</button>
+                            </div>
                         </div>
                     </div>
 
@@ -718,10 +741,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=v3-2"></script>
-    <script src="auth.js?v=v3-2"></script>
-    <script src="buy-credits.js?v=v3-2"></script>
-    <script src="app.js?v=v3-2"></script>
+    <script src="config.js?v=v3-3"></script>
+    <script src="auth.js?v=v3-3"></script>
+    <script src="buy-credits.js?v=v3-3"></script>
+    <script src="app.js?v=v3-3"></script>
     <script>
         // Render 6-image catalog preview on the homepage hero.
         (async function renderHomeCatalogPreview() {
