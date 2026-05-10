@@ -1,0 +1,15 @@
+{
+  "name": "tryweddingdress",
+  "private": true,
+  "description": "Static frontend + Cloudflare Pages Functions backend for Try Wedding Dress",
+  "scripts": {
+    "dev": "wrangler pages dev frontend --compatibility-date=2025-04-01 --binding SUPABASE_URL=$SUPABASE_URL --binding SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY --binding FASHN_API_KEY=$FASHN_API_KEY --binding YOOKASSA_SHOP_ID=$YOOKASSA_SHOP_ID --binding YOOKASSA_SECRET_KEY=$YOOKASSA_SECRET_KEY --r2 RESULTS_BUCKET=tryweddingdress-results",
+    "deploy": "bash scripts/build-static-frontend.sh && wrangler pages deploy frontend --project-name=tryweddingdress --branch=initial-import --commit-dirty=true",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250404.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.50.0"
+  }
+}

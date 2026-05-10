@@ -547,6 +547,51 @@ function updateStepper() {
     });
 }
 
+// Async tryon: POST starts the generation and returns a generation_id
+// quickly, then we poll GET /api/try-on/<id> until it's completed or
+// failed. Total wall time is dominated by FASHN; the browser side just
+// keeps the UI responsive.
+const POLL_INTERVAL_MS = 2500;
+const POLL_TIMEOUT_MS = 4 * 60 * 1000; // 4 minutes — FASHN tryon-max usually finishes in 30-90s
+
+async function buildResultUrl(rawPath) {
+    // /results/<key> is auth-protected; <img src> can't send Authorization
+    // headers, so we append the access token as ?t= which the function
+    // accepts as a fallback.
+    if (!rawPath) return rawPath;
+    const sess = window.TWD_AUTH ? await window.TWD_AUTH.getSession() : null;
+    const token = sess && sess.access_token;
+    if (!token) return API + rawPath;
+    const sep = rawPath.includes('?') ? '&' : '?';
+    return API + rawPath + sep + 't=' + encodeURIComponent(token);
+}
+
+async function pollTryon(generationId) {
+    const start = Date.now();
+    while (true) {
+        const res = await authedFetch('/api/try-on/' + encodeURIComponent(generationId));
+        if (res && res.__authMissing) {
+            throw Object.assign(new Error('auth'), { authMissing: true });
+        }
+        if (res.status === 401) {
+            throw Object.assign(new Error('auth'), { authMissing: true });
+        }
+        if (!res.ok) {
+            const err = await res.json().catch(function () { return {}; });
+            throw new Error(err.detail || 'Ошибка при опросе результата');
+        }
+        const data = await res.json();
+        if (data.status === 'completed') return data;
+        if (data.status === 'failed') {
+            throw new Error(data.error || 'Генерация не удалась');
+        }
+        if (Date.now() - start > POLL_TIMEOUT_MS) {
+            throw new Error('Превышено время ожидания. Попробуйте позже.');
+        }
+        await new Promise(function (r) { setTimeout(r, POLL_INTERVAL_MS); });
+    }
+}
+
 async function generateTryOn() {
     const btn = document.getElementById('generate-btn');
     if (!(await ensureSignedIn())) {
@@ -594,17 +639,28 @@ async function generateTryOn() {
             const err = await res.json().catch(function () { return {}; });
             throw new Error(err.detail || 'Не удалось создать изображение');
         }
-        const data = await res.json();
+        const startData = await res.json();
+        const generationId = startData.generation_id;
+        if (!generationId) {
+            throw new Error('Сервер не вернул generation_id');
+        }
 
+        const finalData = await pollTryon(generationId);
+
+        const signedUrl = await buildResultUrl(finalData.result_url);
         document.getElementById('result-loading').style.display = 'none';
-        document.getElementById('result-img').src = API + data.result_url;
+        document.getElementById('result-img').src = signedUrl;
         document.getElementById('result-image').style.display = 'block';
-        document.getElementById('download-btn').href = API + data.result_url;
+        document.getElementById('download-btn').href = signedUrl;
         document.getElementById('result-actions').style.display = 'flex';
     } catch (e) {
         document.getElementById('result-loading').style.display = 'none';
         document.getElementById('result-placeholder').style.display = 'block';
-        alert('Ошибка: ' + e.message);
+        if (e && e.authMissing) {
+            openAuthRequiredModal();
+        } else {
+            alert('Ошибка: ' + e.message);
+        }
     } finally {
         btn.disabled = false;
         btn.textContent = 'Примерить';
