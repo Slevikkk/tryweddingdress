@@ -1,0 +1,37 @@
+# =============================================================================
+# Cloudflare Pages config for tryweddingdress.com.
+#
+# Frontend assets: ./frontend (after `bash scripts/build-static-frontend.sh`).
+# Backend:         ./functions/** (Pages Functions, TypeScript).
+#
+# Environment variables and bindings are set in the Cloudflare dashboard
+# (Pages → tryweddingdress → Settings → Environment variables / Bindings).
+# The block below is for `wrangler pages dev` so local dev mirrors prod.
+# =============================================================================
+name = "tryweddingdress"
+compatibility_date = "2025-04-01"
+pages_build_output_dir = "frontend"
+
+# --- Plain-text env vars ------------------------------------------------------
+# wrangler pages deploy overwrites the dashboard "Variables and Secrets" page
+# from this file on every deploy. Encrypted (secret_text) vars survive that
+# round-trip because CF can't read them back, but plain vars get wiped.
+# So: declare every public env var here. Secrets stay in the dashboard:
+#   https://dash.cloudflare.com/2800aa08dc342b00dafd8b561c922e2c/pages/view/tryweddingdress/settings
+# Required encrypted secrets (set in dashboard):
+#   - SUPABASE_SERVICE_ROLE_KEY
+#   - FASHN_API_KEY
+#   - YOOKASSA_SECRET_KEY (later, when YooKassa lands)
+[vars]
+SUPABASE_URL = "https://uqevnxxorffumbzwldkx.supabase.co"
+# YOOKASSA_DISABLE_IP_CHECK = "0"
+# YOOKASSA_WEBHOOK_IPS_ALLOWLIST = ""
+
+# --- R2 bucket for FASHN result images --------------------------------------
+# Create the bucket once via:
+#   wrangler r2 bucket create tryweddingdress-results
+# or in the dashboard: R2 → Create bucket → name: tryweddingdress-results.
+[[r2_buckets]]
+binding = "RESULTS_BUCKET"
+bucket_name = "tryweddingdress-results"
+preview_bucket_name = "tryweddingdress-results-preview"

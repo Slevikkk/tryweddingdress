@@ -487,12 +487,40 @@ function removeCustomDress() {
 function updateGenerateBtn() {
     const btn = document.getElementById('generate-btn');
     btn.disabled = !(uploadedPhotoId && (selectedDressId || customDressFile));
+    // Step-1 / step-2 "next" buttons follow the same gating logic as the
+    // generate button: step 1 needs a photo, step 2 needs photo+dress.
+    const step1Next = document.getElementById('step1-next');
+    if (step1Next) step1Next.disabled = !uploadedPhotoId;
+    const step2Next = document.getElementById('step2-next');
+    if (step2Next) step2Next.disabled = !(uploadedPhotoId && (selectedDressId || customDressFile));
     updateStepper();
 }
 
-// Visual stepper at the top of the try-on flow. The "current" step is the
-// earliest step that hasn't been completed yet, so users always see their
-// next action highlighted.
+// Step state — which wizard step is currently visible. The visible step
+// renders full-width; others are hidden via [data-current-step] on the
+// container.
+let currentTryonStep = 1;
+
+function setStep(n, opts) {
+    const scroll = !opts || opts.scroll !== false;
+    currentTryonStep = Math.max(1, Math.min(3, n | 0));
+    const wizard = document.querySelector('.tryon-wizard');
+    if (wizard) wizard.setAttribute('data-current-step', String(currentTryonStep));
+    if (scroll) {
+        // Scroll to the top of the wizard so the user sees the new step
+        // without having to hunt for it.
+        const tryonContainer = document.querySelector('.tryon-container');
+        if (tryonContainer) {
+            tryonContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+    }
+    updateStepper();
+}
+
+// Visual stepper at the top of the try-on flow. Marks completed steps as
+// is-done, the active step as is-active, and disables stepper buttons for
+// steps the user can't yet jump to (forward jumps are gated until the
+// previous step is satisfied; backward jumps are always allowed).
 function updateStepper() {
     const stepper = document.querySelector('.tryon-stepper');
     if (!stepper) return;
@@ -503,15 +531,65 @@ function updateStepper() {
 
     const items = stepper.querySelectorAll('.tryon-stepper-item');
     if (items.length < 3) return;
-    [items[0], items[1], items[2]].forEach((el) => {
+
+    // Reachability: the user can always go back, can go to step 2 once a
+    // photo is uploaded, and to step 3 once both photo and dress are set.
+    const reachable = [true, hasPhoto, hasPhoto && hasDress];
+    // Done state: a step is "done" if its prerequisite has been satisfied
+    // and it's behind the current step.
+    const done = [hasPhoto, hasDress, hasResult];
+
+    items.forEach((el, i) => {
         el.classList.remove('is-active', 'is-done');
+        el.disabled = !reachable[i];
+        if (done[i]) el.classList.add('is-done');
+        if (i + 1 === currentTryonStep) el.classList.add('is-active');
     });
-    if (hasPhoto) items[0].classList.add('is-done');
-    if (hasDress) items[1].classList.add('is-done');
-    if (hasResult) items[2].classList.add('is-done');
-    if (!hasPhoto)        items[0].classList.add('is-active');
-    else if (!hasDress)   items[1].classList.add('is-active');
-    else                  items[2].classList.add('is-active');
+}
+
+// Async tryon: POST starts the generation and returns a generation_id
+// quickly, then we poll GET /api/try-on/<id> until it's completed or
+// failed. Total wall time is dominated by FASHN; the browser side just
+// keeps the UI responsive.
+const POLL_INTERVAL_MS = 2500;
+const POLL_TIMEOUT_MS = 4 * 60 * 1000; // 4 minutes — FASHN tryon-max usually finishes in 30-90s
+
+async function buildResultUrl(rawPath) {
+    // /results/<key> is auth-protected; <img src> can't send Authorization
+    // headers, so we append the access token as ?t= which the function
+    // accepts as a fallback.
+    if (!rawPath) return rawPath;
+    const sess = window.TWD_AUTH ? await window.TWD_AUTH.getSession() : null;
+    const token = sess && sess.access_token;
+    if (!token) return API + rawPath;
+    const sep = rawPath.includes('?') ? '&' : '?';
+    return API + rawPath + sep + 't=' + encodeURIComponent(token);
+}
+
+async function pollTryon(generationId) {
+    const start = Date.now();
+    while (true) {
+        const res = await authedFetch('/api/try-on/' + encodeURIComponent(generationId));
+        if (res && res.__authMissing) {
+            throw Object.assign(new Error('auth'), { authMissing: true });
+        }
+        if (res.status === 401) {
+            throw Object.assign(new Error('auth'), { authMissing: true });
+        }
+        if (!res.ok) {
+            const err = await res.json().catch(function () { return {}; });
+            throw new Error(err.detail || 'Ошибка при опросе результата');
+        }
+        const data = await res.json();
+        if (data.status === 'completed') return data;
+        if (data.status === 'failed') {
+            throw new Error(data.error || 'Генерация не удалась');
+        }
+        if (Date.now() - start > POLL_TIMEOUT_MS) {
+            throw new Error('Превышено время ожидания. Попробуйте позже.');
+        }
+        await new Promise(function (r) { setTimeout(r, POLL_INTERVAL_MS); });
+    }
 }
 
 async function generateTryOn() {
@@ -561,17 +639,28 @@ async function generateTryOn() {
             const err = await res.json().catch(function () { return {}; });
             throw new Error(err.detail || 'Не удалось создать изображение');
         }
-        const data = await res.json();
+        const startData = await res.json();
+        const generationId = startData.generation_id;
+        if (!generationId) {
+            throw new Error('Сервер не вернул generation_id');
+        }
 
+        const finalData = await pollTryon(generationId);
+
+        const signedUrl = await buildResultUrl(finalData.result_url);
         document.getElementById('result-loading').style.display = 'none';
-        document.getElementById('result-img').src = API + data.result_url;
+        document.getElementById('result-img').src = signedUrl;
         document.getElementById('result-image').style.display = 'block';
-        document.getElementById('download-btn').href = API + data.result_url;
+        document.getElementById('download-btn').href = signedUrl;
         document.getElementById('result-actions').style.display = 'flex';
     } catch (e) {
         document.getElementById('result-loading').style.display = 'none';
         document.getElementById('result-placeholder').style.display = 'block';
-        alert('Ошибка: ' + e.message);
+        if (e && e.authMissing) {
+            openAuthRequiredModal();
+        } else {
+            alert('Ошибка: ' + e.message);
+        }
     } finally {
         btn.disabled = false;
         btn.textContent = 'Примерить';
@@ -583,10 +672,32 @@ function resetResult() {
     document.getElementById('result-image').style.display = 'none';
     document.getElementById('result-actions').style.display = 'none';
     document.getElementById('result-placeholder').style.display = 'block';
+    document.getElementById('result-img').src = '';
+    updateStepper();
 }
 
 // Init
+function applyHashRoute() {
+    // Cross-page deep link: dashboard.html / gallery.html / etc. point at
+    // "/#tryon" when they want to open the wizard. Since index.html is a
+    // single-page shell with showPage(), translate the hash on first load
+    // (and on hashchange events) into the right page swap.
+    const h = (window.location.hash || '').replace(/^#/, '');
+    if (h === 'tryon' && document.getElementById('page-tryon')) {
+        showPage('tryon');
+    } else if (h === 'landing' && document.getElementById('page-landing')) {
+        showPage('landing');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadExamples();
     loadCatalog();
+    // Make sure the wizard starts on step 1 with the right stepper state.
+    if (document.querySelector('.tryon-wizard')) {
+        setStep(1, {scroll: false});
+    }
+    applyHashRoute();
 });
+
+window.addEventListener('hashchange', applyHashRoute);

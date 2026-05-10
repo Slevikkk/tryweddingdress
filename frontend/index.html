@@ -7,8 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="style.css?v=v3-2">
+    <link rel="stylesheet" href="auth.css?v=v3-2">
     <style>
         /* ===== Homepage hero (magazine layout) ===== */
         .hero-magazine {
@@ -433,28 +433,38 @@
                 </div>
             </div>
 
-            <!-- Wizard progress indicator. The active step lights up; finished
-                 steps get a check mark. JS keeps this in sync with state via
-                 updateStepper() in app.js. -->
+            <!-- Wizard progress indicator. Each item is a button so users can
+                 jump back to a completed step. JS toggles is-active / is-done
+                 via updateStepper() based on uploadedPhotoId / selectedDressId
+                 / result state, and updates the active step via setStep(). -->
             <ol class="tryon-stepper" aria-label="Прогресс примерки">
-                <li class="tryon-stepper-item is-active">
-                    <span class="tryon-stepper-num">1</span>
-                    <span class="tryon-stepper-label">Фото</span>
+                <li>
+                    <button type="button" class="tryon-stepper-item is-active" onclick="setStep(1)">
+                        <span class="tryon-stepper-num">1</span>
+                        <span class="tryon-stepper-label">Фото</span>
+                    </button>
                 </li>
-                <li class="tryon-stepper-item">
-                    <span class="tryon-stepper-num">2</span>
-                    <span class="tryon-stepper-label">Платье</span>
+                <li>
+                    <button type="button" class="tryon-stepper-item" onclick="setStep(2)">
+                        <span class="tryon-stepper-num">2</span>
+                        <span class="tryon-stepper-label">Платье</span>
+                    </button>
                 </li>
-                <li class="tryon-stepper-item">
-                    <span class="tryon-stepper-num">3</span>
-                    <span class="tryon-stepper-label">Готово</span>
+                <li>
+                    <button type="button" class="tryon-stepper-item" onclick="setStep(3)">
+                        <span class="tryon-stepper-num">3</span>
+                        <span class="tryon-stepper-label">Готово</span>
+                    </button>
                 </li>
             </ol>
 
-            <div class="tryon-grid">
+            <div class="tryon-wizard" data-current-step="1">
                 <!-- Step 1: Upload Photo -->
-                <div class="tryon-step">
-                    <h3>1. Ваше фото</h3>
+                <section class="tryon-step" data-step-num="1">
+                    <header class="tryon-step-header">
+                        <h3>Загрузите ваше фото</h3>
+                        <p class="tryon-step-sub">Фото в полный рост на простом фоне даёт лучший результат.</p>
+                    </header>
                     <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
                         <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)" hidden>
                         <div id="upload-placeholder" class="upload-placeholder" onclick="document.getElementById('photo-input').click()">
@@ -471,9 +481,6 @@
                         </div>
                     </div>
 
-                    <!-- Tips sidebar inside step 1 — what works, what doesn't.
-                         Mirrors trymydress.com photo-tips, helps users get a
-                         decent generation on their first try. -->
                     <div class="tryon-tips">
                         <div class="tryon-tips-col tryon-tips-good">
                             <h4>Что работает</h4>
@@ -494,11 +501,21 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+
+                    <nav class="tryon-step-nav">
+                        <span class="tryon-step-spacer"></span>
+                        <button type="button" id="step1-next" class="btn-primary" onclick="setStep(2)" disabled>
+                            Далее: выбор платья →
+                        </button>
+                    </nav>
+                </section>
 
                 <!-- Step 2: Choose Dress -->
-                <div class="tryon-step">
-                    <h3>2. Выберите платье</h3>
+                <section class="tryon-step" data-step-num="2">
+                    <header class="tryon-step-header">
+                        <h3>Выберите платье</h3>
+                        <p class="tryon-step-sub">Из каталога или загрузите фото своего платья.</p>
+                    </header>
                     <div class="catalog-filters">
                         <div class="filter-group">
                             <label>Цвет:</label>
@@ -526,11 +543,23 @@
                             <button class="btn-remove-small" onclick="removeCustomDress()">&times;</button>
                         </div>
                     </div>
-                </div>
+
+                    <nav class="tryon-step-nav">
+                        <button type="button" class="btn-secondary" onclick="setStep(1)">
+                            ← Назад
+                        </button>
+                        <button type="button" id="step2-next" class="btn-primary" onclick="setStep(3)" disabled>
+                            Далее: примерить →
+                        </button>
+                    </nav>
+                </section>
 
                 <!-- Step 3: Result -->
-                <div class="tryon-step result-step">
-                    <h3>3. Результат</h3>
+                <section class="tryon-step result-step" data-step-num="3">
+                    <header class="tryon-step-header">
+                        <h3>Готово к примерке</h3>
+                        <p class="tryon-step-sub">Нажмите «Примерить» — генерация занимает 30-60 секунд.</p>
+                    </header>
                     <div id="result-area" class="result-area">
                         <div id="result-placeholder" class="result-placeholder">
                             <svg class="result-placeholder-icon" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -541,7 +570,7 @@
                                 <circle cx="60" cy="31" r="2" fill="#d8c8b1"/>
                             </svg>
                             <p class="result-placeholder-title">Здесь появится ваш образ</p>
-                            <p class="result-placeholder-sub">Загрузите фото и выберите платье — нажмите «Примерить»</p>
+                            <p class="result-placeholder-sub">Нажмите «Примерить» ниже, чтобы сгенерировать.</p>
                         </div>
                         <div id="result-loading" class="result-loading" style="display:none;">
                             <div class="spinner"></div>
@@ -555,12 +584,17 @@
                         <a id="download-btn" href="" download="wedding-dress-tryon.png" class="btn-primary">Скачать</a>
                         <button class="btn-secondary" onclick="resetResult()">Ещё один образ</button>
                     </div>
-                </div>
-            </div>
 
-            <button id="generate-btn" class="btn-generate" onclick="generateTryOn()" disabled>
-                Примерить
-            </button>
+                    <nav class="tryon-step-nav">
+                        <button type="button" class="btn-secondary" onclick="setStep(2)">
+                            ← Назад
+                        </button>
+                        <button id="generate-btn" class="btn-primary btn-generate" onclick="generateTryOn()" disabled>
+                            Примерить
+                        </button>
+                    </nav>
+                </section>
+            </div>
         </div>
     </div>
 
@@ -684,10 +718,10 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script src="auth.js"></script>
-    <script src="buy-credits.js"></script>
-    <script src="app.js"></script>
+    <script src="config.js?v=v3-2"></script>
+    <script src="auth.js?v=v3-2"></script>
+    <script src="buy-credits.js?v=v3-2"></script>
+    <script src="app.js?v=v3-2"></script>
     <script>
         // Render 6-image catalog preview on the homepage hero.
         (async function renderHomeCatalogPreview() {
