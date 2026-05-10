@@ -15,34 +15,56 @@
         <div class="nav-container">
             <a href="/" class="logo">Try Wedding Dress</a>
             <div class="nav-links">
-                <a href="/" class="nav-ghost">Главная</a>
-                <a href="/" class="nav-ghost">Примерить</a>
-                <a href="#" onclick="openBuyCreditsModal();return false;" class="nav-cta">Купить кредиты</a>
-                <a href="#" data-auth-action="logout" data-auth-next="/" class="nav-ghost">Выход</a>
+                <!-- Logged-out -->
+                <a href="/" class="nav-ghost" data-auth="signed-out">Главная</a>
+                <a href="/#tryon" class="nav-ghost" data-auth="signed-out">Примерить</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-out">Тарифы</a>
+                <!-- Logged-in -->
+                <a href="/" class="nav-ghost" data-auth="signed-in">Создать</a>
+                <a href="/gallery.html" class="nav-ghost" data-auth="signed-in">Галерея</a>
+                <a href="/pricing.html" class="nav-ghost" data-auth="signed-in">Тарифы</a>
+            </div>
+            <div class="nav-account">
+                <!-- Logged-out -->
+                <a href="/login.html" class="nav-ghost" data-auth="signed-out">Вход</a>
+                <a href="/signup.html" class="nav-cta" data-auth="signed-out">Регистрация</a>
+                <!-- Logged-in -->
+                <a href="/dashboard.html" class="nav-credits" data-auth="signed-in" data-auth-credits title="Кредиты — открыть кабинет">
+                    <svg class="nav-credits-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v10M9 9.5c0-1.1 1.3-2 3-2s3 .9 3 2-1.3 2-3 2-3 .9-3 2 1.3 2 3 2 3-.9 3-2"/>
+                    </svg>
+                    <span data-auth-credits-value>—</span>
+                </a>
+                <a href="/dashboard.html" class="nav-avatar" data-auth="signed-in" data-auth-initial title="Личный кабинет">—</a>
             </div>
         </div>
     </nav>
 
     <div class="dashboard-shell">
-        <div class="dashboard-header">
-            <div>
+        <!-- Greeting / hero strip -->
+        <div class="dashboard-hero">
+            <div class="dashboard-hero-avatar" data-auth-initial>—</div>
+            <div class="dashboard-hero-text">
                 <h1>Личный кабинет</h1>
                 <div class="user-meta">Вы вошли как <strong data-auth-email></strong></div>
             </div>
-            <a href="/" class="btn-primary">Новая примерка</a>
+            <a href="/" class="btn-primary dashboard-hero-cta">Новая примерка</a>
         </div>
 
+        <!-- Stat cards: credits / tryon count / member since -->
         <div class="dashboard-grid">
-            <div class="dashboard-card">
+            <div class="dashboard-card dashboard-card-accent">
                 <h3>Кредиты</h3>
                 <div class="big-number" id="credit-balance">—</div>
                 <div class="card-sub">1 кредит = 1 примерка</div>
-                <button class="btn-secondary" style="margin-top:12px;width:100%;" onclick="openBuyCreditsModal()">Купить ещё</button>
+                <a href="/pricing.html" class="btn-secondary" style="margin-top:14px;width:100%;text-align:center;">Купить ещё</a>
             </div>
             <div class="dashboard-card">
-                <h3>Примерки</h3>
+                <h3>Примерок сделано</h3>
                 <div class="big-number" id="generations-count">—</div>
                 <div class="card-sub" id="generations-completed">— завершено</div>
+                <a href="/gallery.html" class="btn-secondary" style="margin-top:14px;width:100%;text-align:center;">Открыть галерею</a>
             </div>
             <div class="dashboard-card">
                 <h3>Аккаунт</h3>
@@ -51,52 +73,51 @@
             </div>
         </div>
 
-        <div class="dashboard-section">
-            <h2>Недавние примерки</h2>
-            <div id="history-list" class="history-list">
-                <div class="history-empty">Загрузка…</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BUY CREDITS MODAL -->
-    <div id="buy-credits-modal" class="modal" style="display:none;" onclick="if(event.target===this)closeBuyCreditsModal()">
-        <div class="modal-content" style="max-width:760px;" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeBuyCreditsModal()">&times;</button>
-            <div style="padding:36px 32px;">
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:8px;text-align:center;">Купить кредиты</h3>
-                <p style="color:#666;margin-bottom:24px;text-align:center;">
-                    1 кредит = 1 примерка. Кредиты не сгорают и хранятся в вашем аккаунте.
-                </p>
-                <div id="buy-credits-error" class="auth-error" role="alert" style="margin-bottom:16px;"></div>
-                <div class="pricing-grid">
-                    <div class="pricing-card" data-pack="starter">
-                        <div class="pricing-name">Старт</div>
-                        <div class="pricing-tries">5 примерок</div>
-                        <div class="pricing-price">1490 ₽</div>
-                        <div class="pricing-per">298 ₽ за примерку</div>
-                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('starter', this)">Купить</button>
-                    </div>
-                    <div class="pricing-card pricing-featured" data-pack="bride">
-                        <div class="pricing-badge">Выбор невест</div>
-                        <div class="pricing-name">Невеста</div>
-                        <div class="pricing-tries">20 примерок</div>
-                        <div class="pricing-price">2290 ₽</div>
-                        <div class="pricing-per">115 ₽ за примерку</div>
-                        <button class="btn-primary pricing-buy" onclick="buyCreditPack('bride', this)">Купить</button>
-                    </div>
-                    <div class="pricing-card" data-pack="full">
-                        <div class="pricing-name">Полный</div>
-                        <div class="pricing-tries">60 примерок</div>
-                        <div class="pricing-price">4690 ₽</div>
-                        <div class="pricing-per">78 ₽ за примерку</div>
-                        <button class="btn-secondary pricing-buy" onclick="buyCreditPack('full', this)">Купить</button>
-                    </div>
+        <!-- Action tiles: secondary navigation in trymydress style. -->
+        <h2 class="dashboard-section-title">Помощь и настройки</h2>
+        <div class="dashboard-tiles">
+            <a href="/contacts.html" class="dashboard-tile">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </div>
-                <p style="font-size:13px;color:#888;margin-top:20px;text-align:center;">
-                    Оплата через ЮKassa: банковские карты, СБП, Apple Pay, Google Pay.
-                </p>
-            </div>
+                <div class="dashboard-tile-name">Поддержка</div>
+                <div class="dashboard-tile-sub">Написать нам</div>
+            </a>
+            <a href="/#faq" class="dashboard-tile">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="dashboard-tile-name">Помощь</div>
+                <div class="dashboard-tile-sub">Частые вопросы</div>
+            </a>
+            <a href="/pricing.html" class="dashboard-tile">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                </div>
+                <div class="dashboard-tile-name">Тарифы</div>
+                <div class="dashboard-tile-sub">Купить кредиты</div>
+            </a>
+            <a href="/terms.html" class="dashboard-tile">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="dashboard-tile-name">Условия</div>
+                <div class="dashboard-tile-sub">Правила сервиса</div>
+            </a>
+            <a href="/privacy.html" class="dashboard-tile">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="dashboard-tile-name">Конфиденциальность</div>
+                <div class="dashboard-tile-sub">Как храним данные</div>
+            </a>
+            <a href="#" data-auth-action="logout" data-auth-next="/" class="dashboard-tile dashboard-tile-danger">
+                <div class="dashboard-tile-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </div>
+                <div class="dashboard-tile-name">Выйти</div>
+                <div class="dashboard-tile-sub">Закончить сессию</div>
+            </a>
         </div>
     </div>
 
@@ -118,18 +139,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="auth.js"></script>
-    <script src="buy-credits.js"></script>
     <script>
         // Gate the page on a live session.
         window.TWD_AUTH.requireAuth();
-
-        var STATUS_LABELS = {
-            'pending': 'в очереди',
-            'running': 'обрабатывается',
-            'completed': 'готово',
-            'failed': 'ошибка',
-            'canceled': 'отменено',
-        };
 
         (async function () {
             var user = await window.TWD_AUTH.getUser();
@@ -148,35 +160,22 @@
                     'С нами с ' + MONTHS_GENITIVE[d.getMonth()] + ' ' + d.getFullYear();
             }
 
+            // Override avatar initial with profile name first letter when
+            // available (auth.js already filled it from email).
+            if (profile && profile.full_name) {
+                var letter = profile.full_name.trim().charAt(0).toUpperCase();
+                document.querySelectorAll('[data-auth-initial]').forEach(function (el) {
+                    el.textContent = letter;
+                });
+            }
+
             var balance = await window.TWD_AUTH.getCreditBalance();
             document.getElementById('credit-balance').textContent = balance;
 
-            var generations = await window.TWD_AUTH.listGenerations(50);
+            var generations = await window.TWD_AUTH.listGenerations(200);
             document.getElementById('generations-count').textContent = generations.length;
             var completed = generations.filter(function (g) { return g.status === 'completed'; }).length;
             document.getElementById('generations-completed').textContent = completed + ' завершено';
-
-            var list = document.getElementById('history-list');
-            if (generations.length === 0) {
-                list.innerHTML = '<div class="history-empty">Примерок пока нет — <a href="/" style="color:var(--accent-dark);">примерьте первое платье</a>.</div>';
-                return;
-            }
-            list.innerHTML = generations.map(function (g) {
-                var img = g.result_photo_url || g.dress_image_url || '';
-                var when = new Date(g.created_at).toLocaleString('ru-RU');
-                var safeName = (g.dress_name || 'Примерка').replace(/[<>]/g, '');
-                var label = STATUS_LABELS[g.status] || g.status;
-                return (
-                    '<div class="history-item">' +
-                        '<img src="' + img + '" alt="" loading="lazy">' +
-                        '<div class="meta">' +
-                            safeName +
-                            '<span class="when">' + when + '</span>' +
-                        '</div>' +
-                        '<span class="status ' + g.status + '">' + label + '</span>' +
-                    '</div>'
-                );
-            }).join('');
         })();
     </script>
 </body>
