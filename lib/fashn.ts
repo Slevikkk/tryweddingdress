@@ -28,37 +28,39 @@ export interface SubmitTryonArgs {
     /** Either a publicly fetchable URL or a `data:image/...;base64,...` string. */
     modelImage: string;
     productImage: string;
-    /** Optional natural-language hint passed to FASHN to steer generation
-     *  (e.g. "anatomically correct hands, no extra limbs"). */
+    /** Optional natural-language hint passed to FASHN to steer styling
+     *  (e.g. "tuck in shirt", "open jacket"). Default "" lets FASHN use
+     *  its own heuristics. */
     prompt?: string;
-    /** How many variants to generate in one prediction. FASHN supports 1-4. */
-    numSamples?: number;
+    /** How many variants to generate in one prediction. tryon-max
+     *  accepts 1-4. Sent as `num_images` on the wire. */
+    numImages?: number;
 }
-
-// Negative-style hint that nudges FASHN away from the most common
-// anatomy hallucinations we hit on tryon-max (extra arms, fused
-// fingers, malformed hands). Passed as `prompt` on every run.
-export const DEFAULT_TRYON_PROMPT =
-    "anatomically correct body, two arms, five fingers per hand, no extra limbs, natural hand position, photorealistic";
 
 /** Returns the FASHN prediction id. */
 export async function submitTryon(env: Env, args: SubmitTryonArgs): Promise<string> {
-    const numSamples = Math.max(1, Math.min(4, args.numSamples ?? 1));
+    const numImages = Math.max(1, Math.min(4, args.numImages ?? 1));
+    const inputs: Record<string, unknown> = {
+        product_image: args.productImage,
+        model_image: args.modelImage,
+        generation_mode: "quality",
+        output_format: "png",
+        return_base64: false,
+        num_images: numImages,
+        // Bump resolution from FASHN's default 1k to 2k. Costs slightly
+        // more credits on FASHN's side but sharpens details (face,
+        // lace, beading) noticeably.
+        resolution: "2k",
+    };
+    // FASHN's prompt field is for styling adjustments ("tuck in shirt",
+    // "open jacket"), not anatomy hints. Only forward it when the caller
+    // has something meaningful to say so we don't override the default.
+    if (args.prompt && args.prompt.trim()) {
+        inputs.prompt = args.prompt;
+    }
     const payload: Record<string, unknown> = {
         model_name: "tryon-max",
-        inputs: {
-            product_image: args.productImage,
-            model_image: args.modelImage,
-            generation_mode: "quality",
-            output_format: "png",
-            return_base64: false,
-            num_samples: numSamples,
-            // Bump resolution from FASHN's default 1k to 2k. Costs slightly
-            // more credits on FASHN's side but sharpens details (face,
-            // lace, beading) noticeably.
-            resolution: "2k",
-            prompt: args.prompt ?? DEFAULT_TRYON_PROMPT,
-        },
+        inputs,
     };
     const resp = await fetch(`${FASHN_API_URL}/run`, {
         method: "POST",
