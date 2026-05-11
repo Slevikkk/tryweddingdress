@@ -144,9 +144,16 @@
             var user = await window.TWD_AUTH.getUser();
             if (!user) return;
 
-            var generations = await window.TWD_AUTH.listGenerations(200);
+            var allGens = await window.TWD_AUTH.listGenerations(200);
+            // Hide failed rows from the gallery — they confuse users (a
+            // grey/broken card next to real results) and the dress preview
+            // we fall back to makes it look like a successful render. The
+            // row is still in the DB for the refund audit trail.
+            var generations = (allGens || []).filter(function (g) {
+                return g.status !== 'failed';
+            });
             var grid = document.getElementById('gallery-grid');
-            if (!generations || generations.length === 0) {
+            if (generations.length === 0) {
                 grid.innerHTML =
                     '<div class="history-empty">Примерок пока нет — ' +
                     '<a href="/#tryon" style="color:var(--accent-dark);">примерьте первое платье</a>.</div>';
