@@ -28,11 +28,23 @@ export interface SubmitTryonArgs {
     /** Either a publicly fetchable URL or a `data:image/...;base64,...` string. */
     modelImage: string;
     productImage: string;
+    /** Optional natural-language hint passed to FASHN to steer generation
+     *  (e.g. "anatomically correct hands, no extra limbs"). */
+    prompt?: string;
+    /** How many variants to generate in one prediction. FASHN supports 1-4. */
+    numSamples?: number;
 }
+
+// Negative-style hint that nudges FASHN away from the most common
+// anatomy hallucinations we hit on tryon-max (extra arms, fused
+// fingers, malformed hands). Passed as `prompt` on every run.
+export const DEFAULT_TRYON_PROMPT =
+    "anatomically correct body, two arms, five fingers per hand, no extra limbs, natural hand position, photorealistic";
 
 /** Returns the FASHN prediction id. */
 export async function submitTryon(env: Env, args: SubmitTryonArgs): Promise<string> {
-    const payload = {
+    const numSamples = Math.max(1, Math.min(4, args.numSamples ?? 1));
+    const payload: Record<string, unknown> = {
         model_name: "tryon-max",
         inputs: {
             product_image: args.productImage,
@@ -40,6 +52,12 @@ export async function submitTryon(env: Env, args: SubmitTryonArgs): Promise<stri
             generation_mode: "quality",
             output_format: "png",
             return_base64: false,
+            num_samples: numSamples,
+            // Bump resolution from FASHN's default 1k to 2k. Costs slightly
+            // more credits on FASHN's side but sharpens details (face,
+            // lace, beading) noticeably.
+            resolution: "2k",
+            prompt: args.prompt ?? DEFAULT_TRYON_PROMPT,
         },
     };
     const resp = await fetch(`${FASHN_API_URL}/run`, {
@@ -133,10 +151,15 @@ export async function findUploadKey(
 /**
  * Pull a FASHN result image and persist to R2. Returns the public path the
  * frontend should fetch (`/results/<key>`).
+ *
+ * When `variantIndex` is provided we suffix the key (`..._0.png`,
+ * `..._1.png`) so multi-sample generations don't clobber each other.
+ * Falling back to the unsuffixed key keeps single-sample callers and
+ * older rows compatible.
  */
 export async function downloadResultToR2(
     env: Env,
-    args: { url: string; userId: string; generationId: string },
+    args: { url: string; userId: string; generationId: string; variantIndex?: number },
 ): Promise<string> {
     const resp = await fetch(args.url);
     if (!resp.ok || !resp.body) {
@@ -146,7 +169,8 @@ export async function downloadResultToR2(
     // Namespace under `results/` so the bucket can also hold `uploads/`
     // and `dresses/` from the upload-photo / custom-dress paths without
     // a key collision.
-    const key = `results/${args.userId}/${args.generationId}.png`;
+    const suffix = typeof args.variantIndex === "number" ? `_${args.variantIndex}` : "";
+    const key = `results/${args.userId}/${args.generationId}${suffix}.png`;
     await env.RESULTS_BUCKET.put(key, resp.body, {
         httpMetadata: { contentType },
     });

@@ -623,9 +623,24 @@
                         <div id="result-image" style="display:none;">
                             <img id="result-img" src="" alt="Результат примерки">
                         </div>
+                        <div id="result-variants" class="result-variants" style="display:none;">
+                            <p class="result-variants-title">Мы создали 2 варианта — выберите тот, что больше нравится</p>
+                            <div class="result-variants-grid">
+                                <button type="button" class="result-variant" data-variant-index="0" onclick="selectVariant(0)">
+                                    <img class="result-variant-img" alt="Вариант 1">
+                                    <span class="result-variant-label">Вариант 1</span>
+                                </button>
+                                <button type="button" class="result-variant" data-variant-index="1" onclick="selectVariant(1)">
+                                    <img class="result-variant-img" alt="Вариант 2">
+                                    <span class="result-variant-label">Вариант 2</span>
+                                </button>
+                            </div>
+                            <p class="result-variants-hint">Нажмите на вариант — он откроется крупно с кнопкой «Скачать».</p>
+                        </div>
                     </div>
                     <div id="result-actions" class="result-actions" style="display:none;">
                         <a id="download-btn" href="" download="wedding-dress-tryon.png" class="btn-primary">Скачать</a>
+                        <button type="button" id="back-to-variants-btn" class="btn-secondary" onclick="backToVariants()" style="display:none;">← Другой вариант</button>
                         <button class="btn-secondary" onclick="resetResult()">Ещё один образ</button>
                     </div>
 

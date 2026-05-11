@@ -828,12 +828,23 @@ async function generateTryOn() {
 
         const finalData = await pollTryon(generationId);
 
-        const signedUrl = await buildResultUrl(finalData.result_url);
         document.getElementById('result-loading').style.display = 'none';
-        document.getElementById('result-img').src = signedUrl;
-        document.getElementById('result-image').style.display = 'block';
-        document.getElementById('download-btn').href = signedUrl;
-        document.getElementById('result-actions').style.display = 'flex';
+        // FASHN returns >1 sample when we ask for num_samples=2. Show the
+        // picker if we have multiple, otherwise fall through to the
+        // single-image path (still used by old completed rows).
+        const variants = Array.isArray(finalData.result_urls)
+            ? finalData.result_urls.filter(Boolean)
+            : [];
+        if (variants.length > 1) {
+            await showVariantPicker(generationId, variants);
+        } else {
+            const signedUrl = await buildResultUrl(finalData.result_url);
+            document.getElementById('result-img').src = signedUrl;
+            document.getElementById('result-image').style.display = 'block';
+            document.getElementById('download-btn').href = signedUrl;
+            document.getElementById('back-to-variants-btn').style.display = 'none';
+            document.getElementById('result-actions').style.display = 'flex';
+        }
     } catch (e) {
         document.getElementById('result-loading').style.display = 'none';
         document.getElementById('result-placeholder').style.display = 'block';
@@ -854,7 +865,105 @@ function resetResult() {
     document.getElementById('result-actions').style.display = 'none';
     document.getElementById('result-placeholder').style.display = 'block';
     document.getElementById('result-img').src = '';
+    const variantsEl = document.getElementById('result-variants');
+    if (variantsEl) variantsEl.style.display = 'none';
+    const backBtn = document.getElementById('back-to-variants-btn');
+    if (backBtn) backBtn.style.display = 'none';
+    currentVariantUrls = [];
+    currentGenerationId = null;
     updateStepper();
+}
+
+// Variant picker state: holds the raw R2 paths (e.g. `/results/<u>/<g>_0.png`)
+// for the current generation so the "← Другой вариант" button can re-render
+// the picker without another API round-trip.
+let currentVariantUrls = [];
+let currentGenerationId = null;
+
+async function showVariantPicker(generationId, rawUrls) {
+    currentGenerationId = generationId;
+    currentVariantUrls = rawUrls.slice();
+
+    const variantsEl = document.getElementById('result-variants');
+    const imageEl = document.getElementById('result-image');
+    const actionsEl = document.getElementById('result-actions');
+    const placeholderEl = document.getElementById('result-placeholder');
+
+    placeholderEl.style.display = 'none';
+    imageEl.style.display = 'none';
+    actionsEl.style.display = 'none';
+
+    // Sign each variant URL so the <img src> can pull from /results/* with
+    // the access token in the query string (the bucket is auth-gated).
+    const signed = await Promise.all(rawUrls.map((u) => buildResultUrl(u)));
+
+    const buttons = variantsEl.querySelectorAll('.result-variant');
+    buttons.forEach((btn, idx) => {
+        const img = btn.querySelector('.result-variant-img');
+        if (signed[idx]) {
+            img.src = signed[idx];
+            btn.style.display = '';
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+    variantsEl.style.display = 'block';
+}
+
+async function selectVariant(idx) {
+    if (!currentGenerationId) return;
+    const rawUrl = currentVariantUrls[idx];
+    if (!rawUrl) return;
+
+    const variantsEl = document.getElementById('result-variants');
+    const imageEl = document.getElementById('result-image');
+    const imgEl = document.getElementById('result-img');
+    const actionsEl = document.getElementById('result-actions');
+    const downloadBtn = document.getElementById('download-btn');
+    const backBtn = document.getElementById('back-to-variants-btn');
+
+    // Optimistic UI swap — show the chosen variant immediately, then
+    // tell the backend which one to flag as canonical. If the server
+    // call fails we surface the error but don't roll back the UI;
+    // worst case the dashboard still shows variant 0.
+    const signedUrl = await buildResultUrl(rawUrl);
+    imgEl.src = signedUrl;
+    imageEl.style.display = 'block';
+    downloadBtn.href = signedUrl;
+    if (currentVariantUrls.length > 1) {
+        backBtn.style.display = '';
+    } else {
+        backBtn.style.display = 'none';
+    }
+    actionsEl.style.display = 'flex';
+    variantsEl.style.display = 'none';
+
+    try {
+        const res = await authedFetch('/api/try-on/' + encodeURIComponent(currentGenerationId), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ variant_index: idx }),
+        });
+        if (res && res.__authMissing) {
+            openAuthRequiredModal();
+            return;
+        }
+        if (!res.ok) {
+            // Non-fatal: variant is shown locally, dashboard may show the
+            // default. Just log; no need to alert the user.
+            console.warn('select-variant failed:', res.status);
+        }
+    } catch (e) {
+        console.warn('select-variant error:', e);
+    }
+    updateStepper();
+}
+
+function backToVariants() {
+    if (!currentVariantUrls.length) return;
+    document.getElementById('result-image').style.display = 'none';
+    document.getElementById('result-actions').style.display = 'none';
+    document.getElementById('result-variants').style.display = 'block';
 }
 
 // Init

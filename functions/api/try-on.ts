@@ -171,7 +171,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         let predictionId: string;
         try {
             const modelImage = await r2ObjectToDataUrl(env, modelKey);
-            predictionId = await submitTryon(env, { modelImage, productImage });
+            // Ask FASHN for two variants so the user can pick the better
+            // one (helps when one render has anatomy glitches like extra
+            // limbs). Default prompt nudges away from the worst hallucs.
+            predictionId = await submitTryon(env, {
+                modelImage,
+                productImage,
+                numSamples: 2,
+            });
         } catch (e) {
             // Refund the credit and mark the generation 'failed' so the
             // dashboard reflects the truth.
