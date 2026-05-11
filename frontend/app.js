@@ -470,10 +470,10 @@ function openDressModal(id) {
     const attribution = document.getElementById('modal-attribution');
     if (dress.source_url) {
         sourceLink.href = dress.source_url;
-        const retailerName = (dress.source && dress.source.includes('davidsbridal')) ? "David's Bridal" : (dress.source || 'retailer');
-        sourceLink.innerHTML = `Открыть на ${retailerName} &rarr;`;
+        const retailerName = (dress.vendor || dress.source || 'салон').toString();
+        sourceLink.innerHTML = `Открыть на сайте салона &rarr;`;
         sourceLink.style.display = '';
-        attribution.innerHTML = `Фото и описание предоставлены <a href="${dress.source_url}" target="_blank" rel="noopener">${retailerName}</a>. Используются в демонстрационных целях.`;
+        attribution.innerHTML = `Фото и описание предоставлены <a href="${dress.source_url}" target="_blank" rel="noopener">салоном ${retailerName}</a>. Используются в демонстрационных целях.`;
         attribution.style.display = '';
     } else {
         sourceLink.style.display = 'none';
