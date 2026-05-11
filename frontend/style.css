@@ -1441,23 +1441,66 @@ footer {
     }
 
     /* When the drawer is open and the user is signed out, render login +
-       register as full-width buttons stacked below the nav-links. */
+       register as full-width buttons stacked below the nav-links. Both get
+       the same height and rounded shape; the ghost ("Вход") variant uses a
+       border so it visually balances the filled CTA ("Регистрация"). */
     .navbar.is-open .nav-account a.nav-ghost[data-auth="signed-out"],
     .navbar.is-open .nav-account a.nav-cta[data-auth="signed-out"] {
         display: flex;
         order: 101;
         flex-basis: 100%;
-        margin: 0 0 0 0;
+        margin: 4px 16px 0;
         padding: 13px 14px;
         font-size: 1rem;
         justify-content: center;
         text-align: center;
+        border-radius: 10px;
     }
     .navbar.is-open .nav-account a.nav-ghost[data-auth="signed-out"] {
-        margin: 4px 16px 0;
+        border: 1px solid var(--accent);
+        color: var(--accent-dark);
+        background: transparent;
     }
     .navbar.is-open .nav-account a.nav-cta[data-auth="signed-out"] {
-        margin: 4px 16px 12px;
+        margin-bottom: 12px;
+    }
+
+    /* Backdrop dim behind the open drawer (and tap-to-close target).
+       nav.js inserts the overlay element next to the navbar. */
+    .nav-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 14, 8, 0.32);
+        z-index: 90;
+    }
+    .navbar.is-open ~ .nav-backdrop {
+        display: block;
+    }
+
+    /* Compact try-on stepper so all 3 steps stay on one row in 390px-wide
+       phones. Reduces label text size, pill padding, and connector width. */
+    .tryon-stepper { gap: 2px; padding: 0 4px; }
+    .tryon-stepper-item {
+        font-size: 0.82rem;
+        padding: 4px 8px 4px 4px;
+        gap: 5px;
+    }
+    .tryon-stepper-num {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+    .tryon-stepper > li + li::before {
+        width: 12px;
+        margin: 0 2px;
+    }
+
+    /* 2-column dress catalog on mobile: shrink the minmax so two cards fit
+       inside the available viewport width (≈ 287px). */
+    .catalog-builder-grid .dress-catalog {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
 
     .ba-slider { height: 380px; }

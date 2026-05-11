@@ -32,10 +32,27 @@
         btn.innerHTML = '<span></span><span></span><span></span>';
         container.appendChild(btn);
 
+        // Backdrop sibling to the navbar — gets visible (via CSS) only while
+        // the drawer is open and serves as a tap-anywhere-to-close target.
+        var backdrop = document.querySelector('.nav-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            backdrop.setAttribute('aria-hidden', 'true');
+            navbar.parentNode.insertBefore(backdrop, navbar.nextSibling);
+        }
+
+        function close() {
+            navbar.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+
         btn.addEventListener('click', function () {
             var open = navbar.classList.toggle('is-open');
             btn.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
+
+        backdrop.addEventListener('click', close);
 
         // Close the drawer when any link inside the nav is tapped. Without
         // this, in-page navigations like showPage('tryon') would leave the
@@ -44,15 +61,13 @@
             var link = e.target.closest && e.target.closest('a');
             if (!link) return;
             if (!navbar.classList.contains('is-open')) return;
-            navbar.classList.remove('is-open');
-            btn.setAttribute('aria-expanded', 'false');
+            close();
         });
 
         // Close on Esc — small a11y nicety.
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && navbar.classList.contains('is-open')) {
-                navbar.classList.remove('is-open');
-                btn.setAttribute('aria-expanded', 'false');
+                close();
             }
         });
     }
