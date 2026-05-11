@@ -177,7 +177,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             predictionId = await submitTryon(env, {
                 modelImage,
                 productImage,
-                numSamples: 2,
+                numImages: 2,
             });
         } catch (e) {
             // Refund the credit and mark the generation 'failed' so the
