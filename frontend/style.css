@@ -1126,6 +1126,73 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; }
 .result-actions {
     display: flex; gap: 12px; margin-top: 16px;
     justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* VARIANT PICKER — shown after FASHN returns 2 samples. Two thumbs
+   side-by-side with a hover lift and a clear "click to pick" affordance.
+   On mobile they stack. */
+.result-variants {
+    width: 100%;
+    padding: 6px 0;
+}
+.result-variants-title {
+    text-align: center;
+    margin: 0 0 14px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+}
+.result-variants-hint {
+    text-align: center;
+    margin: 12px 0 0;
+    font-size: 0.82rem;
+    color: var(--text-light);
+}
+.result-variants-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.result-variant {
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 12px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    font: inherit;
+    color: inherit;
+}
+.result-variant:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+}
+.result-variant:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+.result-variant-img {
+    width: 100%;
+    max-height: 360px;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f4f1ec;
+}
+.result-variant-label {
+    font-size: 0.92rem;
+    color: var(--text);
+    font-weight: 500;
+}
+@media (max-width: 520px) {
+    .result-variants-grid { grid-template-columns: 1fr; }
 }
 
 /* GENERATE BUTTON — Примерить inside step 3 nav. Inherits from .btn-primary,
