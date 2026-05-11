@@ -103,8 +103,24 @@
             });
         }
 
-        function openLightbox(g) {
-            var img = g.result_photo_url || g.dress_image_url || '';
+        // /results/<key> is auth-gated, so we can't drop the raw URL into
+        // <img src>. Append the access token as ?t=… so the Pages Function
+        // serving the bucket can verify the user without an Authorization
+        // header (which <img> can't send). /catalog-images/ etc. are
+        // public and pass through unchanged.
+        async function signedImgSrc(rawPath) {
+            if (!rawPath) return rawPath;
+            if (!rawPath.startsWith('/results/')) return rawPath;
+            var sess = window.TWD_AUTH ? await window.TWD_AUTH.getSession() : null;
+            var token = sess && sess.access_token;
+            if (!token) return rawPath;
+            var sep = rawPath.indexOf('?') >= 0 ? '&' : '?';
+            return rawPath + sep + 't=' + encodeURIComponent(token);
+        }
+
+        async function openLightbox(g) {
+            var raw = g.result_photo_url || g.dress_image_url || '';
+            var img = await signedImgSrc(raw);
             document.getElementById('gallery-lightbox-img').src = img;
             document.getElementById('gallery-lightbox-img').alt =
                 'Примерка ' + (g.dress_name || '');
@@ -128,17 +144,30 @@
             var user = await window.TWD_AUTH.getUser();
             if (!user) return;
 
-            var generations = await window.TWD_AUTH.listGenerations(200);
+            var allGens = await window.TWD_AUTH.listGenerations(200);
+            // Hide failed rows from the gallery — they confuse users (a
+            // grey/broken card next to real results) and the dress preview
+            // we fall back to makes it look like a successful render. The
+            // row is still in the DB for the refund audit trail.
+            var generations = (allGens || []).filter(function (g) {
+                return g.status !== 'failed';
+            });
             var grid = document.getElementById('gallery-grid');
-            if (!generations || generations.length === 0) {
+            if (generations.length === 0) {
                 grid.innerHTML =
                     '<div class="history-empty">Примерок пока нет — ' +
                     '<a href="/#tryon" style="color:var(--accent-dark);">примерьте первое платье</a>.</div>';
                 return;
             }
 
+            // Pre-sign every result URL once so we can drop them into the
+            // grid synchronously. Using Promise.all keeps it parallel.
+            var signedThumbs = await Promise.all(generations.map(function (g) {
+                return signedImgSrc(g.result_photo_url || g.dress_image_url || '');
+            }));
+
             grid.innerHTML = generations.map(function (g, i) {
-                var img = g.result_photo_url || g.dress_image_url || '';
+                var img = signedThumbs[i] || '';
                 var when = new Date(g.created_at).toLocaleString('ru-RU');
                 var name = escapeHtml(g.dress_name || 'Примерка');
                 var label = STATUS_LABELS[g.status] || g.status;
